@@ -1,0 +1,21 @@
+searches:
+  - id: msk-radiology
+    title: MSK-radiologi
+    enabled: true
+    version: '1'
+    lookback_days: 14
+    description: Förslag för klinisk granskning; MSK och bilddiagnostik, utan tidskriftsfilter.
+    query: >-
+      ("Musculoskeletal Diseases"[MeSH Terms] OR musculoskeletal[Title/Abstract])
+      AND ("Diagnostic Imaging"[MeSH Terms] OR radiology[Title/Abstract])
+  - id: ai-radiology
+    title: AI inom radiologi
+    enabled: true
+    version: '1'
+    lookback_days: 14
+    description: Förslag för klinisk granskning; AI och radiologi, utan evidensgradering.
+    query: >-
+      ("Artificial Intelligence"[MeSH Terms] OR "machine learning"[Title/Abstract]
+      OR "deep learning"[Title/Abstract])
+      AND ("Radiology"[MeSH Terms] OR radiology[Title/Abstract]
+      OR "Diagnostic Imaging"[MeSH Terms])

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation><PMID>10000001</PMID><Article>
+      <ArticleTitle>Synthetic <i>MSK</i> imaging study</ArticleTitle>
+      <Journal><Title>Fixture Journal</Title><JournalIssue><PubDate><Year>2026</Year><Month>Nov</Month></PubDate></JournalIssue></Journal>
+      <AuthorList><Author><LastName>Example</LastName><ForeName>Anna</ForeName></Author><Author><CollectiveName>Fixture Group</CollectiveName></Author></AuthorList>
+      <Abstract><AbstractText Label="OBJECTIVE">Evaluate <b>imaging</b>.</AbstractText><AbstractText Label="RESULTS">Synthetic results only.</AbstractText></Abstract>
+    </Article></MedlineCitation>
+    <PubmedData><ArticleIdList><ArticleId IdType="doi">https://doi.org/10.0000/TEST</ArticleId></ArticleIdList></PubmedData>
+  </PubmedArticle>
+  <PubmedArticle>
+    <MedlineCitation><PMID>10000002</PMID><Article><ArticleTitle>Synthetic minimal record</ArticleTitle><Journal><JournalIssue><PubDate><MedlineDate>2026 Winter</MedlineDate></PubDate></JournalIssue></Journal></Article></MedlineCitation>
+  </PubmedArticle>
+</PubmedArticleSet>
