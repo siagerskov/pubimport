@@ -60,3 +60,17 @@ men AI-delen kräver explicita AI/ML/DL-begrepp i titeln. Detta kan missa releva
 arbeten där AI eller modalitet bara framgår av abstract/indexering. Det är ett
 medvetet precisionsförslag för pilot, inte en komplett litteratursökningsstrategi.
 Verklig relevans och träffantal för version 3 återstår att granska.
+
+## Bygg egna sökningar utan kod
+
+`web/search-builder.html` är ett fristående formulär för termgrupper och färdiga
+PubMed-queries. En term/fras per rad; OR inom grupp, AND mellan ämne och metod,
+valfri NOT mot titel/abstract. Avancerad syntax används endast i query-läget.
+Ord/fraselement citeras i term-läget; hur trunkering och fraser tolkas måste
+kontrolleras i PubMeds Search Details efter provkörning. Ingen lokal simulering
+påstår sig kunna validera PubMeds kliniska relevans eller kompletta querysyntax.
+
+Exporten använder JSON-citerade YAML-strängar, booleskt enabled, unika stabila ID:n,
+1–365 dagars fönster och query-version. Den kan läsas av appens befintliga validator.
+Utkast lagras enbart efter ett uttryckligt klick i den lokala webbläsaren. Export
+och provlänk aktiverar ingen import; införande av YAML och pilot är separata steg.

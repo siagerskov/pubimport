@@ -45,3 +45,11 @@ ogranskade inkorgsposter kan få nya ämneskopplingar; proveniens skapas i separ
 notes. Tvetydiga PMID/DOI-matchningar stoppar planen; ingen titelbaserad sammanslagning.
 Papperskorgen läses också så att borttagna referenser inte oavsiktligt återimporteras.
 Konsekvens: konflikt kräver manuell granskning, metadatauppdatering är separat framtida arbete.
+
+## ADR 008 – Lokal sökbyggare utan credentials (2026-11-02)
+
+Val: en fristående HTML-fil med inbyggd JavaScript-logik, PubMed-provlänk och
+YAML-export. Alternativ: en server med inloggning och direkt GitHub-skrivning.
+Skäl: användaren kan själv skriva söktermer utan installation, API-nycklar eller
+risk för oavsiktlig Zotero-import. Konsekvens: exportfilen måste införas separat
+i repositoryt; provning av relevans sker i PubMed och kräver fortfarande granskning.

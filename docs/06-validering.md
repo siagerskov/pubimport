@@ -91,3 +91,15 @@ Fortfarande irrelevanta provtitlar: ingen pilot godkänns på detta underlag.
 Version 3 är ett snävare förslag med sämre förväntad recall, ännu inte livevaliderat.
 Lokala tester: **95 passerar**, inklusive sammanfattning med escapad extern titel
 och den riktiga offline-runnerns generering av Actions Summary. Lint och format godkända.
+
+## Fristående sökverktyg – 2026-11-02
+
+- 95 Python-tester och sju JavaScript-tester passerar; lint och format godkända.
+- Chromium via tillfällig lokal HTTP-server: termgrupper, fältval, query-preview,
+  sparat utkast efter omladdning, YAML-nedladdning, ny bevakning och mobilbredd
+  verifierade utan JavaScript-fel. Ingen riktig PubMed-flik öppnades i browserprovet;
+  provlänkens query och UTC-datumintervall verifieras av JavaScript-test.
+- Den faktiskt browsernedladdade YAML-filen lästes av appens `load_searches`:
+  två giltiga sökningar, ändrad query med höjd version och rätt term/fälttaggar.
+- Verktyget saknar API-nycklar och externa skrivoperationer. En lokal HTML-fil
+  kan inte automatiskt ersätta repositorykonfiguration; införande sker separat.

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="sv">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PubMed – bygg din sökning</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#16312e;background:#f1f5f4}*{box-sizing:border-box}body{margin:0}main{max-width:1000px;margin:auto;padding:32px 20px}h1{font-size:2rem;margin-bottom:8px}p{line-height:1.6}.card{background:white;border:1px solid #d5e2de;border-radius:16px;padding:24px;margin:20px 0}label{display:block;font-weight:650;margin:16px 0 6px}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:11px;border:1px solid #9cafaa;border-radius:8px;background:white}textarea{resize:vertical;min-height:115px}button,.button{display:inline-block;border:0;border-radius:8px;padding:12px 18px;cursor:pointer;background:#176d5b;color:white;text-decoration:none;margin:8px 8px 0 0}.secondary{background:#e2eeea;color:#16312e}button:disabled{opacity:.5;cursor:default}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.hint{font-size:.9rem;color:#4f655e}.warning{color:#875400;background:#fff4d6;padding:12px;border-radius:8px}.error{color:#a32626}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f5f4;padding:16px;border-radius:8px;max-height:350px;overflow:auto}.toolbar{display:flex;align-items:end;gap:12px}.toolbar select{flex:1}.toolbar button{white-space:nowrap}input[type=checkbox]{width:auto}details{margin-top:16px}summary{cursor:pointer;font-weight:650}:focus-visible{outline:3px solid #d39e2a;outline-offset:3px}@media(max-width:650px){.grid{grid-template-columns:1fr}.toolbar{display:block}main{padding:20px 12px}.card{padding:18px}}
+</style></head><body><main>
+<h1>Bygg din PubMed-sökning</h1>
+<p>Ange egna söktermer, prova sökningen i PubMed och spara den till bevakningsappen.</p>
+<p class="hint">Körs i din webbläsare. Inga API-nycklar behövs. Inget sparas i Zotero eller ändras på GitHub.</p>
+<section class="card"><div class="toolbar"><div style="flex:1"><label for="search">Bevakning</label><select id="search"></select></div><button id="add" class="secondary">Ny bevakning</button></div>
+<div class="grid"><div><label for="title">Namn</label><input id="title" maxlength="120"></div><div><label for="id">Sök-ID</label><input id="id" placeholder="till-exempel-msk"></div></div>
+<div class="grid"><div><label for="days">Datumfönster, dagar</label><input id="days" type="number" min="1" max="365"></div><div><label for="enabled"><input id="enabled" type="checkbox"> Aktiverad i bevakningen</label><p class="hint">PubMed-länken använder samma överlappande EDAT-fönster som appen.</p></div></div>
+<label for="mode">Hur vill du skriva sökningen?</label><select id="mode"><option value="expert">Redigera färdig PubMed-query</option><option value="terms">Bygg av söktermer</option></select>
+<div id="termsPanel" hidden>
+<p class="hint">En term eller fras per rad. Alternativ inom en grupp kombineras med OR. Ämne och metod kombineras med AND. Använd engelska PubMed-termer.</p>
+<div class="grid"><div><label for="topic">Ämnen / anatomi</label><textarea id="topic" placeholder="knee&#10;shoulder&#10;musculoskeletal"></textarea><label for="topicField">Sök ämnen i</label><select id="topicField"><option value="Title/Abstract">Titel och abstract</option><option value="Title">Enbart titel</option><option value="All Fields">Alla fält</option></select></div>
+<div><label for="method">Metoder / andra begrepp (valfritt)</label><textarea id="method" placeholder="MRI&#10;computed tomography&#10;ultrasound"></textarea><label for="methodField">Sök metoder i</label><select id="methodField"><option value="Title/Abstract">Titel och abstract</option><option value="Title">Enbart titel</option><option value="All Fields">Alla fält</option></select></div></div>
+<label for="exclude">Uteslut termer (valfritt)</label><textarea id="exclude" placeholder="Skriv bara termer som säkert ska uteslutas"></textarea><p class="hint">NOT kan även utesluta relevanta artiklar. Uteslutningen gäller titel/abstract.</p></div>
+<div id="expertPanel"><label for="query">PubMed-query</label><textarea id="query" rows="7" spellcheck="false"></textarea><p class="hint">De medföljande sökningarna är förslag, inte kliniskt validerade strategier. Avancerad PubMed-syntax kontrolleras av PubMed när du provar den.</p></div>
+<p id="error" class="error" role="alert"></p><h2>Din sökning</h2><pre id="preview"></pre>
+<button id="test">Prova i PubMed ↗</button><button id="copy" class="secondary">Kopiera query</button><p id="message" role="status" class="hint"></p>
+</section>
+<section class="card"><h2>Spara till appen</h2><p>Ladda ned <strong>searches.yaml</strong> med alla bevakningar. Filen ersätter appens <code>config/searches.yaml</code> när du har granskat sökningarna. En ändrad query får automatiskt en ny version.</p>
+<button id="download">Ladda ned searches.yaml</button><button id="saveLocal" class="secondary">Spara utkast i webbläsaren</button><button id="clearLocal" class="secondary">Radera lokalt utkast</button>
+<p class="hint">Nedladdning och lokalt utkast aktiverar ingen import. Dela den nedladdade YAML-filen här när du vill få sökningarna införda och testade. Inkludera aldrig patientuppgifter.</p>
+<details><summary>Visa hela konfigurationen</summary><pre id="yaml"></pre></details></section>
+</main>
+<script>
+'use strict';
+const Builder = {
+  fields: new Set(['Title/Abstract','Title','All Fields']),
+  lines(text) { return [...new Set(text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean))]; },
+  group(text, field) {
+    if (!this.fields.has(field)) throw Error('Ogiltigt sökfält.');
+    const terms=this.lines(text);
+    return terms.length ? '('+terms.map(t=>{
+      if (/["\[\]\x00-\x1f]/.test(t)) throw Error('Skriv vanliga termer utan citationstecken eller fälttaggar; använd query-läget för avancerad syntax.');
+      return '"'+t+'"['+field+']';
+    }).join(' OR ')+')' : '';
+  },
+  query(d) {
+    if(d.mode==='expert') return d.query.trim();
+    const topic=this.group(d.topic,d.topicField);
+    if(!topic) throw Error('Ange minst ett ämne.');
+    const method=this.group(d.method,d.methodField), excluded=this.group(d.exclude,'Title/Abstract');
+    return topic+(method?' AND '+method:'')+(excluded?' NOT '+excluded:'');
+  },
+  validate(searches) {
+    const ids=new Set();
+    if(!Array.isArray(searches)||!searches.length||searches.length>100) throw Error('Ange mellan 1 och 100 bevakningar.');
+    for(const s of searches){
+      if(!s.title.trim()) throw Error('Alla bevakningar behöver ett namn.');
+      if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.id)||ids.has(s.id)) throw Error('Sök-ID måste vara unikt och bestå av små bokstäver, siffror och bindestreck.');
+      ids.add(s.id);
+      if(!Number.isInteger(s.lookback_days)||s.lookback_days<1||s.lookback_days>365) throw Error('Datumfönstret måste vara 1–365 dagar.');
+      if(!s.query.trim()) throw Error('Alla bevakningar behöver en query.');
+      if(!/^[1-9][0-9]*$/.test(s.version)) throw Error('Ogiltig sökversion.');
+    }
+  },
+  yaml(searches){
+    this.validate(searches);
+    const str=v=>JSON.stringify(v);
+    return 'searches:\n'+searches.map(s=>
+      '  - id: '+str(s.id)+'\n    title: '+str(s.title)+'\n    enabled: '+s.enabled+
+      '\n    version: '+str(s.version)+'\n    lookback_days: '+s.lookback_days+
+      '\n    description: '+str(s.description)+'\n    query: '+str(s.query)+'\n').join('');
+  },
+  url(query,days,now=new Date()){
+    if(!Number.isInteger(days)||days<1||days>365) throw Error('Ogiltigt datumfönster.');
+    const end=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));
+    const start=new Date(end);start.setUTCDate(start.getUTCDate()-days+1);
+    const date=d=>d.toISOString().slice(0,10).replaceAll('-','/');
+    return 'https://pubmed.ncbi.nlm.nih.gov/?'+new URLSearchParams({term:'('+query+') AND ("'+date(start)+'"[EDAT] : "'+date(end)+'"[EDAT])'});
+  },
+  version(original,query){return original.isNew || original.query===query ? original.version : String(Number(original.version)+1);}
+};
+globalThis.SearchBuilder=Builder;
+</script>
+<script>
+'use strict';
+const defaults=[{"id": "msk-radiology", "title": "MSK-radiologi", "enabled": true, "version": "3", "lookback_days": 14, "description": "Förslag med högre precision för pilot: radiologisk modalitet i titeln. Lägre recall förväntas; klinisk granskning återstår.", "query": "(\"Musculoskeletal Diseases\"[MeSH Terms] OR musculoskeletal[Title/Abstract] OR bone[Title/Abstract] OR joint[Title/Abstract] OR tendon*[Title/Abstract] OR ligament*[Title/Abstract] OR cartilage[Title/Abstract] OR menisc*[Title/Abstract] OR spine[Title/Abstract] OR spinal[Title/Abstract] OR knee[Title/Abstract] OR hip[Title/Abstract] OR shoulder[Title/Abstract] OR ankle[Title/Abstract]) AND (radiolog*[Title] OR MRI[Title] OR \"MR imaging\"[Title] OR \"magnetic resonance imaging\"[Title] OR CT[Title] OR \"computed tomography\"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title] OR fluoroscop*[Title] OR tomosynthesis[Title])"}, {"id": "ai-radiology", "title": "AI inom radiologi", "enabled": true, "version": "3", "lookback_days": 14, "description": "Förslag med högre precision för pilot: radiologisk modalitet i titeln. Lägre recall förväntas; klinisk granskning återstår.", "query": "(\"artificial intelligence\"[Title] OR \"machine learning\"[Title] OR \"deep learning\"[Title] OR \"neural network\"[Title] OR \"neural networks\"[Title] OR \"AI-based\"[Title] OR \"AI-driven\"[Title]) AND (radiolog*[Title] OR MRI[Title] OR \"MR imaging\"[Title] OR \"magnetic resonance imaging\"[Title] OR CT[Title] OR \"computed tomography\"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title] OR fluoroscop*[Title] OR tomosynthesis[Title])"}];
+const storageKey='pubmed-zotero-search-builder-v1';
+let searches=structuredClone(defaults), originals=structuredClone(defaults), selected=0;
+const byId=id=>document.getElementById(id);
+try{
+ const saved=localStorage.getItem(storageKey);
+ if(saved){const parsed=JSON.parse(saved);SearchBuilder.validate(parsed.searches);SearchBuilder.validate(parsed.originals);if(parsed.searches.length!==parsed.originals.length)throw Error();searches=parsed.searches;originals=parsed.originals;}
+}catch{byId('message').textContent='Lokalt utkast kunde inte läsas. Grundförslagen används.';}
+function options(){const select=byId('search');select.replaceChildren();searches.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.title||'Ny bevakning';select.append(o);});select.value=selected;}
+function show(){options();const s=searches[selected];for(const k of ['title','id','query'])byId(k).value=s[k];byId('days').value=s.lookback_days;byId('enabled').checked=s.enabled;byId('mode').value='expert';for(const id of ['topic','method','exclude'])byId(id).value='';render();}
+function current(){const s=searches[selected];s.title=byId('title').value;s.id=byId('id').value;s.lookback_days=Number(byId('days').value);s.enabled=byId('enabled').checked;const d={};for(const id of ['mode','query','topic','method','exclude','topicField','methodField'])d[id]=byId(id).value;s.query=SearchBuilder.query(d);s.version=SearchBuilder.version(originals[selected],s.query);return s;}
+function render(){byId('termsPanel').hidden=byId('mode').value!=='terms';byId('expertPanel').hidden=byId('mode').value!=='expert';try{current();SearchBuilder.validate(searches);byId('error').textContent='';byId('preview').textContent=searches[selected].query;byId('yaml').textContent=SearchBuilder.yaml(searches);for(const id of ['test','copy','download','saveLocal'])byId(id).disabled=false;byId('search').selectedOptions[0].textContent=searches[selected].title;}catch(e){byId('error').textContent=e.message;byId('preview').textContent='';byId('yaml').textContent='';for(const id of ['test','copy','download','saveLocal'])byId(id).disabled=true;}}
+for(const id of ['title','id','days','enabled','query','topic','method','exclude','topicField','methodField'])byId(id).addEventListener('input',render);
+byId('mode').addEventListener('change',()=>{if(byId('mode').value==='expert'&&byId('preview').textContent)byId('query').value=byId('preview').textContent;render();});
+byId('search').addEventListener('change',()=>{selected=Number(byId('search').value);show();});
+byId('add').addEventListener('click',()=>{const s={id:'bevakning-'+(searches.length+1),title:'Ny bevakning',enabled:true,version:'1',lookback_days:14,description:'Eget sökförslag; klinisk granskning återstår.',query:'radiology[Title/Abstract]'};searches.push(s);originals.push({...structuredClone(s),isNew:true});selected=searches.length-1;show();});
+byId('test').addEventListener('click',()=>{current();window.open(SearchBuilder.url(searches[selected].query,searches[selected].lookback_days),'_blank','noopener,noreferrer');});
+byId('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(searches[selected].query);byId('message').textContent='Query kopierad.';}catch{byId('message').textContent='Markera och kopiera queryn i förhandsvisningen; webbläsaren blockerade automatisk kopiering.';}});
+byId('download').addEventListener('click',()=>{const blob=new Blob([SearchBuilder.yaml(searches)],{type:'text/yaml;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='searches.yaml';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);byId('message').textContent='Konfiguration nedladdad. Ingen import har aktiverats.';});
+byId('saveLocal').addEventListener('click',()=>{try{localStorage.setItem(storageKey,JSON.stringify({searches,originals}));byId('message').textContent='Utkast sparat i den här webbläsaren.';}catch{byId('message').textContent='Webbläsaren tillåter inte lokal lagring. Ladda ned YAML-filen i stället.';}});
+byId('clearLocal').addEventListener('click',()=>{try{localStorage.removeItem(storageKey);byId('message').textContent='Lokalt utkast raderat. Dina öppna sökningar finns kvar tills sidan stängs.';}catch{byId('message').textContent='Lokal lagring är inte tillgänglig.';}});
+show();
+</script></body></html>

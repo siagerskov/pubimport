@@ -4,6 +4,23 @@ Automatisk litteraturbevakning för MSK-radiologi och AI inom radiologi med en
 Zotero-inkorg för manuell granskning. **Version 0.2 implementerar synkningen och
 manuell körning; verklig API-validering och godkänd pilot återstår.**
 
+## Eget sökverktyg
+
+Öppna `web/search-builder.html` i en vanlig webbläsare (ladda ned HTML-filen
+först om du tittar på GitHub). Den är fristående och behöver ingen installation,
+server, nyckel eller internet för redigering och export.
+
+Välj en bevakning eller **Ny bevakning**, sedan **Bygg av söktermer**. Ange en
+engelsk term/fras per rad, välj sökfält och prova med **Prova i PubMed**. Termer
+inom gruppen kombineras med OR, ämne och metod med AND. NOT är valfritt och bör
+användas försiktigt. PubMed öppnas i en ny flik med samma EDAT-fönster som appen.
+
+**Ladda ned searches.yaml** exporterar alla bevakningar med stabila ID:n och
+uppdaterad query-version. Granska och ersätt `config/searches.yaml` eller dela
+filen i utvecklingschatten för införande. Verktyget ändrar inte GitHub eller
+Zotero. **Spara utkast i webbläsaren** är valfritt; filen sparas annars inte
+mellan sessioner. Inkludera aldrig patientuppgifter i söktermer.
+
 ## Prova utan konton
 
 Python 3.12+ och [uv](https://docs.astral.sh/uv/) behövs. Från repositoryroten:

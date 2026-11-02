@@ -2,6 +2,12 @@
 
 ## 2026-11-02
 
+- Fristående sökverktyg i `web/search-builder.html`: egna termer, OR/AND/NOT,
+  val av titel/titel-abstract/alla fält, query-förhandsvisning och PubMed-länk.
+- Export till validerbar searches.yaml, automatisk versionshöjning från medföljande
+  query och valfritt lokalt utkast. Inga API-nycklar eller externa skrivningar.
+- Sju JavaScript-tester och automatiserad browserkontroll tillagda.
+
 - Version 2 gav fortfarande irrelevanta provträffar. Sökförslag version 3
   kräver radiologisk modalitet i titel och prioriterar precision före recall.
 - Actions visar nu en kort, HTML-escapad sammanfattning med artikelrubriker,
