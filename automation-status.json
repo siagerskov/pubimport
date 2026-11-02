@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-11-02T14:42:48.444586+00:00",
-  "run_id": "41464377174",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41464377174",
+  "observed_at": "2026-11-02T14:55:28.905139+00:00",
+  "run_id": "41466473198",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41466473198",
   "result": "success",
   "event": "push",
   "mode": "dry-run",
@@ -20,7 +20,7 @@
     "deferred": 422
   },
   "tag_fix": "",
-  "commit": "47bf06d009669d18fa1a1d5c00a788b2846ee89c",
+  "commit": "8b4e36084dc2d2832cd26510761468a30e6524d3",
   "searches": [
     {
       "search_id": "msk-radiology",
