@@ -51,3 +51,10 @@ granskade sökningar och uttryckligt godkännande av pilotimport. Begränsa anta
 granska poster manuellt och verifiera omkörning. Dokumentera faktiska utfall.
 Separat godkännande före daglig körning. Inget steg markeras klart på grund av
 enbart mockade tester.
+
+## Automatikens start verifierad 2026-11-02
+
+Godkänd startkörning lyckades: taggen verifierad och tio nya referenser importerade
+utan fel. Statusgrenen möjliggör direkt uppföljning utan manuellt kopierade loggar.
+Första schemalagda körningen återstår att observera; kapacitet för 427 uppskjutna
+träffar behöver beslutas separat om full täckning inom datumfönstret önskas.

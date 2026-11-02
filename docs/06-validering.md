@@ -1,5 +1,23 @@
 # Validering
 
+## Senast verifierad start av automatiken – 2026-11-02
+
+Statusfilen från Actions **41454865904**, källcommit
+`b5ffd5f24f4382950107c7166a70ad57872cce27`, lästes direkt via Git-grenen
+`automation-status`. Sync-jobbet lyckades i apply-läge:
+
+- Engångsrättning: `tag_fix=verified`, målpostens status/godkand läst tillbaka.
+- Tio nya referenser importerade; fyra befintliga pilotposter kändes igen.
+- Noll saknade titlar, noll fel, 21 av 21 plansteg slutförda.
+- 427 nya träffar uppskjutna av tiotaket.
+
+Dagligt schema 05:23 UTC är pushat på main. Första tidstyrda körningen är ännu
+inte observerad. Statuspublicering till separat gren fungerar i verklig körning.
+Det stora antalet uppskjutna träffar innebär att tiotaket inte garanterar att
+allt hinner importeras innan 14-dagarsfönstret passerar. Ingen ytterligare
+bulkimport eller höjning av taket görs utan nytt beslut om kapacitet.
+
+
 ## Aktuellt utfall – 2026-11-02
 
 Användarens read-only Actions-resultat från körning **41445005452** bekräftar:

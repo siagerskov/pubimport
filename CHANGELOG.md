@@ -2,6 +2,10 @@
 
 ## 2026-11-02
 
+- Verifierad startkörning 41454865904: taggrättning bekräftad, tio nya referenser
+  importerade, fyra kända, noll fel. Maskinläsbar status kunde läsas direkt via Git.
+- 427 träffar uppskjutna; tiotakets kapacitetsbegränsning dokumenterad.
+
 - Maskinläsbar status på separat automation-status-gren gör att resultat kan
   följas via Git även när GitHubs API inte kan nås från utvecklingsmiljön.
   Endast räknare/utfall publiceras; separat jobb har skrivrättighet till repo.
