@@ -2,6 +2,12 @@
 
 ## 2026-11-02
 
+- Användargodkänd automatisk status: dragning till godkänd-samlingen sätter
+  status/godkand och tar bort inkorgsmedlemskap, även i ämnesundersamlingar.
+- Timvis kontroll utan nya importer, samt samma policy vid import. Egna
+  taggar/metadata bevaras; konflikter med avvakta/exkluderad rapporteras.
+- Separat review-status-gren gör att utfallet kan följas direkt via Git.
+
 - På användarens begäran höjt dagligt importtak och standardbatch från 10 till 20
   nya referenser. Tidpunkten 05:23 UTC och datumfönstret är oförändrade.
 

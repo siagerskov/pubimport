@@ -322,3 +322,12 @@ class ZoteroClient:
             raise ZoteroError("Ogiltig tagguppdatering.")
         _, headers = self._request("PATCH", "items/" + item_key, {"tags": tags})
         self.version = self._version(headers)
+
+    def approve_item(self, item_key, data):
+        if not KEY.fullmatch(item_key) or set(data) != {"tags", "collections"}:
+            raise ZoteroError("Ogiltig godkännandeuppdatering.")
+        validate_records(
+            [{"key": item_key, "data": {"itemType": "journalArticle", **data}}], "items"
+        )
+        _, headers = self._request("PATCH", "items/" + item_key, data)
+        self.version = self._version(headers)

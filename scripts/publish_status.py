@@ -18,7 +18,11 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def publish(repository, token, commit, status, opener=None):
+def publish(repository, token, commit, status, opener=None, kind="import"):
+    if kind not in {"import", "review"}:
+        raise ValueError("Invalid status kind")
+    branch = BRANCH if kind == "import" else "review-status"
+    filename = FILE if kind == "import" else "review-status.json"
     opener = opener or build_opener(NoRedirect()).open
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise ValueError("Invalid repository")
@@ -53,19 +57,19 @@ def publish(repository, token, commit, status, opener=None):
         except (OSError, URLError, ValueError):
             raise RuntimeError("Statusfilens nätverksanrop misslyckades.") from None
 
-    if request("GET", "git/ref/heads/" + BRANCH, missing_ok=True) is None:
-        request("POST", "git/refs", {"ref": "refs/heads/" + BRANCH, "sha": commit})
-    old = request("GET", "contents/" + FILE + "?ref=" + BRANCH, missing_ok=True)
+    if request("GET", "git/ref/heads/" + branch, missing_ok=True) is None:
+        request("POST", "git/refs", {"ref": "refs/heads/" + branch, "sha": commit})
+    old = request("GET", "contents/" + filename + "?ref=" + branch, missing_ok=True)
     body = {
         "message": "Update automation run status",
-        "branch": BRANCH,
+        "branch": branch,
         "content": base64.b64encode(
             json.dumps(status, ensure_ascii=False, indent=2).encode()
         ).decode(),
     }
     if old:
         body["sha"] = old["sha"]
-    request("PUT", "contents/" + FILE, body)
+    request("PUT", "contents/" + filename, body)
 
 
 def run():
@@ -86,6 +90,9 @@ def run():
             "errors",
             "deferred",
             "completed_actions",
+            "review_updates",
+            "review_conflicts",
+            "reviews_completed",
         }
         and type(v) is int
     }
@@ -100,8 +107,14 @@ def run():
         "tag_fix": os.environ.get("TAG_FIX_RESULT", ""),
         "commit": os.environ.get("GITHUB_SHA", ""),
     }
-    publish(repository, os.environ.get("GITHUB_TOKEN", ""), status["commit"], status)
-    print("Körstatus sparad på separat automation-status-gren.")
+    publish(
+        repository,
+        os.environ.get("GITHUB_TOKEN", ""),
+        status["commit"],
+        status,
+        kind=os.environ.get("STATUS_KIND", "import"),
+    )
+    print("Körstatus sparad på separat statusgren.")
 
 
 if __name__ == "__main__":

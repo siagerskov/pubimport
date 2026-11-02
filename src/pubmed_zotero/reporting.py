@@ -6,6 +6,7 @@ import html
 def action_summary(report):
     summary = report.get("sync", {}).get("summary", {})
     discovery = report["summary"]
+    reviewed = summary.get("reviews_completed", summary.get("review_updates", 0))
     rows = [
         "## PubMed → Zotero",
         "",
@@ -20,6 +21,8 @@ def action_summary(report):
         f"Importerade: {summary.get('imported', 0)}",
         "",
         f"Uppskjutna av importtak: {summary.get('deferred', 0)}",
+        f"Automatiska godkännanden: {reviewed} · "
+        f"Statuskonflikter: {summary.get('review_conflicts', 0)}",
         "",
         "### Artiklar i körplanen",
         "",

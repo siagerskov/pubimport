@@ -54,7 +54,9 @@ def test_status_writes_only_isolated_branch_and_never_token_into_file():
 def test_status_output_whitelists_only_integer_counters(monkeypatch):
     module = publisher()
     captured = []
-    monkeypatch.setattr(module, "publish", lambda *args: captured.append(args[-1]))
+    monkeypatch.setattr(
+        module, "publish", lambda *args, **kwargs: captured.append(args[-1])
+    )
     monkeypatch.setenv("GITHUB_REPOSITORY", "siagerskov/pubimport")
     monkeypatch.setenv("GITHUB_SHA", "a" * 40)
     monkeypatch.setenv(
@@ -73,3 +75,24 @@ def test_status_output_whitelists_only_integer_counters(monkeypatch):
     assert captured[0]["import_summary"] == {"imported": 3, "known": 4}
     assert "SECRET" not in json.dumps(captured[0])
     assert "PRIVATE" not in json.dumps(captured[0])
+
+
+def test_review_status_is_published_separately_from_import_status():
+    requests = []
+    responses = iter([{}, {"sha": "existing"}, {}])
+
+    def opener(request, timeout):
+        requests.append(request)
+        return io.BytesIO(json.dumps(next(responses)).encode())
+
+    publisher().publish(
+        "siagerskov/pubimport",
+        "SECRET",
+        "a" * 40,
+        {"result": "success"},
+        opener,
+        kind="review",
+    )
+    payload = json.loads(requests[-1].data)
+    assert payload["branch"] == "review-status"
+    assert requests[-1].full_url.endswith("/contents/review-status.json")

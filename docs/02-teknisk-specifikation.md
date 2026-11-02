@@ -91,3 +91,15 @@ ingen transaktion över hela körningen och ingen automatisk rollback.
 
 Mockade kontrakt är verifierade; verklig API-kompatibilitet, behörighet och pilot
 återstår innan produktionsklarhet kan hävdas.
+
+## Godkännandesynk efter användarens uttryckliga beslut
+
+Regeln om att inte ändra manuella statusar har ett specifikt godkänt undantag:
+medlemskap i godkänd-samlingen är användarens godkännandesignal. Appskapade
+journalArticle-poster som inte är raderade får status/godkand och lämnar
+inkorgsträdet. Endast taggar för ej-granskad/godkand/godkänd eller avsaknad av
+status får normaliseras. Andra statusar lämnas oförändrade och rapporteras.
+Reconciliation räknas i review_updates/reviews_completed och skapar inga nya
+referenser. Den uppdaterar tags och collections atomärt per post med
+If-Unmodified-Since-Version. Tidigare absoluta formuleringar om orörda statusar
+avser tiden före detta användargodkända undantag; metadata och egna taggar skyddas fortsatt.

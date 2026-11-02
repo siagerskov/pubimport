@@ -78,10 +78,23 @@ skapade poster och inget kommando raderar eller slår ihop referenser.
 Nya poster får `status/ej-granskad` i `00 – Automatisk import` och respektive
 ämnessamling. Godkänn manuellt enligt [manualen](docs/09-anvandarmanual-zotero.md).
 Omkörning känner igen PMID, annars DOI. Tvetydiga matchningar kräver granskning.
-Titlar, taggar, bibliografiska metadata och privata anteckningar på befintliga
-poster skrivs aldrig över. Endast appens ännu ogranskade inkorgsposter kan få
+Titlar, egna taggar, bibliografiska metadata och privata anteckningar på befintliga
+poster skrivs inte över. Godkännandestatus synkroniseras från samlingen enligt nedan. Endast appens ännu ogranskade inkorgsposter kan få
 ytterligare ämnessamlingar. Proveniens sparas som separata anteckningar på
 appskapade poster, en per sökning/version/query.
+
+## Godkänn utan att ändra taggar för hand
+
+Dra en importerad artikel till **01 – Granskade och godkända**. Vid nästa
+kontroll sätts `status/godkand` och medlemskap i inkorgen och dess undersamlingar
+tas bort. Kopiering/dragning räcker; du behöver inte flytta bort artikeln manuellt.
+Egna projekt-/ämnessamlingar utanför inkorgen bevaras.
+
+Kontrollen körs varje timme via Actions och vid import. GitHub kan fördröja jobb;
+ändringen sker efter Zotero-synkning och nästa genomförda kontroll, inte i realtid.
+Enbart appskapade referenser hanteras. Motstridiga statusar som `status/avvakta`
+eller `status/exkluderad` bevaras och redovisas som konflikter. Att ta bort en
+artikel ur godkänd-samlingen återställer inte status automatiskt.
 
 ## Automatisering och kontroller
 

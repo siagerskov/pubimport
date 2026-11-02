@@ -90,8 +90,22 @@ def plan_sync(discovery, searches, snapshot: Snapshot):
         else:
             collection_refs[f"{parent}/{name}"] = key
     titles = {s.id: s.title for s in searches}
+    # Local import avoids a module cycle while keeping the approval policy separate.
+    from .reviews import review_plan
+
     items = deepcopy(snapshot.items)
-    stats = {"new": 0, "known": 0, "metadata_missing": 0}
+    reviews = review_plan(snapshot)
+    actions.extend(reviews["actions"])
+    by_key = {item["key"]: item for item in items}
+    for action in reviews["actions"]:
+        by_key[action["item"]]["data"].update(deepcopy(action["data"]))
+    stats = {
+        "new": 0,
+        "known": 0,
+        "metadata_missing": 0,
+        "review_updates": reviews["summary"]["review_updates"],
+        "review_conflicts": reviews["summary"]["review_conflicts"],
+    }
     for entry in discovery["articles"]:
         article = entry["article"]
         existing = match(article, items)
@@ -169,7 +183,7 @@ def apply_plan(plan, client):
     if not client.allow_writes or client.version != plan["library_version"]:
         raise ZoteroError("Apply kräver skrivläge och samma lästa biblioteksversion.")
     resolved = {}
-    summary = {**plan["summary"], "completed_actions": 0}
+    summary = {**plan["summary"], "completed_actions": 0, "reviews_completed": 0}
 
     def resolve(value):
         if isinstance(value, str):
@@ -182,7 +196,10 @@ def apply_plan(plan, client):
 
     try:
         for action in plan["actions"]:
-            if action["action"] == "add_collections":
+            if action["action"] == "approve_item":
+                client.approve_item(action["item"], action["data"])
+                summary["reviews_completed"] += 1
+            elif action["action"] == "add_collections":
                 client.add_collections(
                     {"key": resolve(action["item"])}, resolve(action["collections"])
                 )

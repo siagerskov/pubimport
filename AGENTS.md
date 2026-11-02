@@ -10,3 +10,7 @@
 - Respektera manuella statusar och användarens data. Tester får inte använda ett verkligt bibliotek.
 - Redovisa antaganden, genomförda kontroller och återstående risker per etapp.
 - Använd befintlig checkout i den isolerade miljön; skapa inte worktrees utan begäran.
+
+- Godkännandesynk är uttryckligen godkänd: för appskapade poster signalerar
+  medlemskap i godkänd-samlingen status/godkand och borttagning ur inkorgsträdet.
+  Bevara egna taggar/metadata och rapportera avvakta/exkluderad-konflikter.

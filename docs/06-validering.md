@@ -106,3 +106,13 @@ Statuspubliceringens två tester verifierar att enbart den separata grenen
 uppdateras och att endast tillåtna heltalsräknare publiceras. Totalt **112
 Python-tester** passerar tillsammans med sju JavaScript-tester. Faktisk
 statuspublicering och startimport återstår tills körningen avslutats.
+
+## Samlingsstyrda status-taggar – 2026-11-02
+
+Användaren bad uttryckligen om automatiska taggar efter flytt till godkänd-samlingen.
+Policyn testas med appskapade referenser: godkännande, borttagning från hela
+inkorgsträdet, bevarade metadata/egna taggar, normalisering av godkänd/godkand,
+konflikter med exkluderad, poster utanför sökfönstret, papperskorg/manuella poster,
+omkörning och giltiga maskinstatusutdata. Importtaket är höjt till 20.
+Lokalt: 119 Python-tester och sju JavaScript-tester passerar; lint/format godkända.
+Första verkliga timkontrollens utfall återstår att läsa från review-status-grenen.

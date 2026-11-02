@@ -1,19 +1,35 @@
-# Manuellt arbetsflöde i Zotero
+# Granska referenser i Zotero
 
-Version 0.2 skapar dessa samlingar vid godkänd apply. Dry-run visar bara planen.
-Ingen verklig import har ännu verifierats.
+## Godkänn med en enda handling
 
-1. Ny import ska hamna i `00 – Automatisk import`, ämnesundersamlingarna
-   `MSK-radiologi`/`AI inom radiologi`, och ha `status/ej-granskad`.
-2. Vid godkännande: ta bort övriga status-taggar, sätt `status/godkand`, lägg samma
-   post i `01 – Granskade och godkända` och ta bort dess inkorgsmedlemskap.
-3. Vid avvaktan: sätt enbart `status/avvakta` och behåll i inkorgen.
-4. Vid exkludering: sätt enbart `status/exkluderad`, ta bort från inkorgen men
-   behåll posten i biblioteket så att framtida körningar känner igen den.
-5. `02 – Projekt och litteraturöversikter` kan innehålla samma godkända poster.
+1. Granska artikelns innehåll och metadata i inkorgen.
+2. Dra artikeln till **01 – Granskade och godkända**. Vanlig dragning/kopiering
+   räcker; samma referens kan ligga i flera samlingar utan att dupliceras.
+3. Synkronisera Zotero. Vid nästa timkontroll eller import sätter appen
+   `status/godkand`, tar bort `status/ej-granskad` och eventuell äldre stavning
+   `status/godkänd`, samt tar bort medlemskap i `00 – Automatisk import` och alla
+   dess undersamlingar.
+4. Synkronisera igen för att se uppdateringen i programmet.
 
-Samlingar är medlemskap, inte kopior. Välj ta bort ur samling, inte radera ur
-biblioteket. Använd taggfiltret för status och kontrollera att varje post har
-exakt en status-tagg. Sök på titel/DOI/PMID för att hitta poster. Automatiken ska
-respektera dessa val och aldrig återställa en granskad post till ej granskad.
-Det beteendet är verifierat med simulerat bibliotek; kontrollera det också i piloten.
+Du behöver inte ändra taggar eller tömma ämnesinkorgarna artikel för artikel.
+Metadata, anteckningar, egna taggar och projekt-/ämnessamlingar utanför inkorgen
+bevaras. Kontrollen gäller enbart appskapade referenser. Papperskorgen lämnas orörd.
+
+Kontrollen körs varje timme (minut 08 UTC) och vid import. Det är inte realtid:
+GitHub kan fördröja schemalagda jobb. Du kan även välja Actions → Automatic
+approval tags → Run workflow för att kontrollera tidigare.
+
+## Avvakta eller exkludera
+
+Sätt vid behov manuellt `status/avvakta` eller `status/exkluderad` och ta bort
+övriga status-taggar. Exkluderade poster bör behållas i biblioteket för att
+förhindra framtida dubbelimport. Att ta bort ur samling är inte samma sak som
+att radera ur biblioteket.
+
+Om en sådan post också ligger i godkänd-samlingen ändras den inte automatiskt;
+konflikten rapporteras. Rätta samlingsmedlemskapet eller statusen efter ditt beslut.
+Ingen automatisk återgång till ej-granskad sker om godkänd-samlingen tas bort.
+
+`02 – Projekt och litteraturöversikter` kan innehålla samma referenser utan kopior.
+Den automatiska kontrollen ändrar inget där. Taggar filtreras i Zoteros tagglista;
+PMID finns i Extra och sökproveniens i artikelns barnanteckning.

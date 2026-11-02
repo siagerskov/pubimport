@@ -95,3 +95,18 @@ endast statusjobbet har contents:write och får inte Zotero-nyckeln.
 Statusgrenen startar inte appimport eftersom push-triggern bara gäller main.
 En felande statuspublicering ändrar inte utfallet av redan utförda Zotero-steg.
 Kontrollera alltid källcommit och run_id för att undvika att läsa en gammal status.
+
+## Automatisk status efter samlingsändring – godkänd 2026-11-02
+
+`review-status.yml` kör varje timme, minut 08 UTC, och kan startas manuellt.
+Appens importerade referenser i godkänd-samlingen (inklusive dess undersamlingar)
+får status/godkand och lämnar inkorgsträdet. Egna taggar och övriga fält bevaras.
+Explicit avvakta/exkluderad/okänd status stoppar ändring för posten och räknas
+som review_conflicts. Ingen automatisk nedgradering görs om samlingen tas bort.
+Samma policy används vid import, även för poster utanför PubMed-datumfönstret.
+
+Godkännande-PATCH innehåller enbart tags och collections med biblioteksversionens
+konkurrensskydd. Kontrolljobbet importerar aldrig nya referenser och delar
+concurrency med importen. Separat säker status finns på grenen review-status,
+i review-status.json. Det ändrar inte den dagliga importens automation-status.
+Statusjobbet har repository-skrivrättighet men saknar Zotero-nyckel.
