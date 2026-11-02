@@ -1,55 +1,97 @@
-# Ändringslogg
+# Drift och underhåll
 
-## 2026-11-02
+## Automatisk import – godkänd 2026-11-02
 
-- Användaren godkände pilot med högst fyra nya referenser. Engångsworkflow
-  för exakt godkänd push, utan möjlighet till automatisk import via re-run.
-- Pilot hämtar högst två träffar per sökning, fryser urvalet och verifierar
-  efter import att en ny plan för samma urval inte kräver fler åtgärder.
+Användaren godkände rättning av den sista pilot-taggen och hela det automatiska
+flödet. `pubmed-sync.yml` kör nu varje dag **05:23 UTC**. Det motsvarar 06:23
+svensk vintertid och 07:23 sommartid. GitHub kan fördröja schemalagda körningar;
+ingen exakt leveranstid garanteras.
 
-- Infört användarens exakta MSK-query som version 4; fluoroskopi och tomosyntes
-  borttagna ur den sökningen. AI kvar på version 3. Sökverktygets grundförslag uppdaterade.
+Varje schemalagd körning hämtar hela det konfigurerade 14-dagars EDAT-fönstret,
+läser Zotero inklusive anteckningar och papperskorg och importerar **högst tio
+nya referenser totalt**. Tillgängliga platser fördelas växelvis mellan sökningarna.
+Nya referenser får status/ej-granskad och rätt ämnessamling under inkorgen.
+Befintliga metadata och manuella statusar ändras inte.
 
-- Fristående sökverktyg i `web/search-builder.html`: egna termer, OR/AND/NOT,
-  val av titel/titel-abstract/alla fält, query-förhandsvisning och PubMed-länk.
-- Export till validerbar searches.yaml, automatisk versionshöjning från medföljande
-  query och valfritt lokalt utkast. Inga API-nycklar eller externa skrivningar.
-- Sju JavaScript-tester och automatiserad browserkontroll tillagda.
+Hela urvalets identifierarkonflikter kontrolleras innan en delmängd väljs.
+Överskjutande nya referenser redovisas som `deferred`/Uppskjutna av importtak.
+De kan komma med vid senare körningar så länge de ligger kvar i EDAT-fönstret.
+**Det finns ingen beständig kö:** om inflödet överstiger tio per dag, eller ett
+långt driftavbrott inträffar, kan äldre ej importerade träffar falla ur fönstret.
+Granska uppskjutna antal; kör fler manuella batchar eller ändra tak/fönster vid
+behov. Appen hävdar inte fullständig litteraturbevakning under en växande kö.
 
-- Version 2 gav fortfarande irrelevanta provträffar. Sökförslag version 3
-  kräver radiologisk modalitet i titel och prioriterar precision före recall.
-- Actions visar nu en kort, HTML-escapad sammanfattning med artikelrubriker,
-  sökversioner, antal och trunkering direkt på körningens översiktssida.
+`contents: read`, timeout 30 minuter och concurrency utan avbrott av pågående jobb
+används. Körmiljön är Ubuntu 24.04; checkout/setup-python är låsta till officiella
+v6-commits. Secrets lämnas inte till externa pull requests.
 
-- Verklig dry-run verifierad via användarens Actions-logg: nio unika poster,
-  noll importer och inga metadatafel i det begränsade urvalet.
-- Sökförslag version 2 kräver tydligare radiologiska modaliteter efter
-  irrelevanta spektroskopi-/fluorescensträffar i version 1; klinisk granskning återstår.
+## Start och riktad taggrättning
 
-- Appkoden pushad till GitHub. Dry-run startas automatiskt vid appändringar
-  på main; apply kräver fortsatt manuell trigger och biblioteksbekräftelse.
+Den uttryckligt godkända startpushen rättar bara taggen på PMID 42960128 från
+status/godkänd till status/godkand. Den kräver att posten är appskapad, ligger i
+godkänd-samlingen och saknar andra motstridiga statusar. Övriga taggar, metadata,
+notes och samlingar bevaras; biblioteksversionen skyddar mot samtidiga ändringar.
+Resultatet läses tillbaka. Rättningen kan bara köras på den exakta godkända
+startcommitten och första run_attempt, aldrig på dagligt schema.
 
-## 0.2.0 – 2026-11-01
+Samma startkörning gör en första begränsad fullfönsterimport med tiotak.
+Framtida vanliga kodpushar kör **dry-run**, inte apply. Verkligt utfall från
+startkörning och första schemalagda körning måste observeras innan driftklarhet
+kan hävdas; tekniska tester ersätter inte det.
 
-- Etapp 2: Zotero API-v3-klient, konsistent paginerad snapshot, samlingsplanering,
-  bibliografisk mappning och offline/live dry-run.
-- Etapp 3: PMID/DOI-matchning, konfliktstopp, proveniensanteckningar,
-  explicit apply med importtak och versionsskydd, säker omkörning efter partiella fel.
-- Manuella statusar, metadata, personliga notes och papperskorgsval bevaras.
-- Etapp 4: manuellt Actions-flöde med offline/dry-run/apply, concurrency
-  och körinstruktioner; dagligt schema förblir avstängt.
-- Mockade integrations- och återhämtningsprov; ingen verklig import genomförd.
+## Manuell körning och stopp
 
-## 0.1.0 – 2026-11-01
+Actions → PubMed to Zotero → Run workflow:
 
-### Etapp 0 – Projektbootstrap
-- Pythonpaket, CLI, versionslåsta beroenden och CI för offline-kontroller.
-- Projektregler, installationsanvisningar, dokumentation och etappplan.
+- `offline`: syntetisk demonstration utan nätverk eller nycklar.
+- `dry-run`: läser API:erna, skriver bara plan; säkert standardval.
+- `apply`: import till explicit bekräftat bibliotek. Sätt confirm_library till
+  rätt numeriskt ID. Limit `all` söker hela fönstret; positiv siffra begränsar
+  antal hämtade per sökning. max_imports styr batchens globala tak, standard tio.
 
-### Etapp 1 – PubMed-läsning
-- Två versionshanterade sökförslag med överlappande EDAT-datumfönster.
-- ESearch/EFetch med paginering, batchar, timeout, hastighetsbegränsning,
-  sanerade fel och begränsade återförsök, inklusive Retry-After.
-- Normalisering av PMID, DOI, titel, författare, datum, tidskrift och abstract.
-- JSON-rapport med proveniens och sammanslagning av överlappande PMID inom körningen.
-- Syntetiskt offline-läge och mockade integrationstester. Ingen Zotero-skrivning.
+För extra ikappkörning: välj apply, limit all, max_imports 10 och bekräftat ID.
+Inga redan kända referenser ska skapas igen. Normal CLI utan --batch-imports
+behåller tidigare skydd: överskridet --max-imports avbryter hela planen.
+
+Pausa automatiseringen via Actions → PubMed to Zotero → meny → Disable workflow.
+Det raderar inget i Zotero. Återaktivera först efter felsökning. Vid behov kan
+schedule tas bort ur workflowfilen i en granskad commit.
+
+## Behörigheter, loggar och felsökning
+
+Environment zotero-production eller repositoryinställningarna ska ge:
+
+- Secret ZOTERO_API_KEY och valfri NCBI_API_KEY.
+- Variables ZOTERO_LIBRARY_ID, ZOTERO_LIBRARY_TYPE (user/group), NCBI_EMAIL.
+- Biblioteksåtkomst, notes-åtkomst för personligt bibliotek och skrivrättighet.
+
+Appen verifierar rättigheterna innan synkning. Nycklar skrivs aldrig ut.
+Summary visar antal, uppskjutna poster, query-versioner och titlar i körplanen.
+Detaljerad JSON och sanerade fel finns i loggen. Aktivera GitHub-notifieringar
+för misslyckade Actions-körningar i kontots notifieringsinställningar.
+
+Vid 412/samtidig ändring eller okänt skrivresultat: ny dry-run före återförsök.
+POST återförsöks aldrig blint. Redan skapade poster och proveniens läses tillbaka.
+Identifierarkonflikter kräver manuell granskning; ingen automatisk sammanslagning
+eller rollback görs. Ett feljobb betyder inte att inga tidigare steg hann sparas.
+
+## Underhåll och backup
+
+Versionshantera kod, sökningar och låsfil; aldrig nycklar. Uppdatera beroenden
+med uv lock --upgrade och kör formattering, lint, tester och build. API-ändringar
+kräver uppdaterade kontraktstester, inte avstängd verifiering.
+Ta Zotero-export före större ändringar. Följ Zoteros återställningsanvisningar;
+appen gör ingen destruktiv återställning. Beakta aktuella GitHub-kvoter,
+schemainaktivitet och loggretention. Molnmiljöns publicering är separat från
+kodpush och har inte utförts av detta arbete.
+
+## Maskinläsbar körstatus
+
+Efter sync-jobbet sparar ett separat jobb `automation-status.json` på grenen
+`automation-status`. Den innehåller enbart kör-ID/länk, källcommit, utfall,
+körläge, heltalsräknare och status för engångsrättningen. Inga titlar, notes,
+biblioteksdata eller nycklar publiceras. Sync-jobbet har fortsatt contents:read;
+endast statusjobbet har contents:write och får inte Zotero-nyckeln.
+Statusgrenen startar inte appimport eftersom push-triggern bara gäller main.
+En felande statuspublicering ändrar inte utfallet av redan utförda Zotero-steg.
+Kontrollera alltid källcommit och run_id för att undvika att läsa en gammal status.

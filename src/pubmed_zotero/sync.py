@@ -202,3 +202,34 @@ def apply_plan(plan, client):
         summary["errors"] = 1
         raise ApplyError(summary) from None
     return {"mode": "apply", "summary": summary}
+
+
+def bounded_plan(report, searches, snapshot, maximum):
+    """Validate the full set, then fairly select at most maximum new references."""
+    if maximum < 1:
+        raise ValueError("Positive import cap required")
+    full = plan_sync(report, searches, snapshot)
+    if full["summary"]["new"] <= maximum:
+        return report, full, 0
+    buckets = {}
+    included = set()
+    for entry in report["articles"]:
+        article = entry["article"]
+        if match(article, snapshot.items) or not article["title"]:
+            included.add(article["pmid"])
+        else:
+            topic = entry["provenance"][0]["search_id"]
+            buckets.setdefault(topic, []).append(article["pmid"])
+    selected = 0
+    while selected < maximum and any(buckets.values()):
+        for bucket in buckets.values():
+            if bucket and selected < maximum:
+                included.add(bucket.pop(0))
+                selected += 1
+    limited = {
+        **report,
+        "articles": [e for e in report["articles"] if e["article"]["pmid"] in included],
+    }
+    plan = plan_sync(limited, searches, snapshot)
+    deferred = full["summary"]["new"] - plan["summary"]["new"]
+    return limited, plan, deferred

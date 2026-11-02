@@ -312,3 +312,13 @@ class ZoteroClient:
             "PATCH", "items/" + item["key"], {"collections": collections}
         )
         self.version = self._version(headers)
+
+    def update_tags(self, item_key, tags):
+        """Explicit maintenance operation; normal sync never calls this."""
+        if not KEY.fullmatch(item_key) or any(
+            not isinstance(tag, dict) or not isinstance(tag.get("tag"), str)
+            for tag in tags
+        ):
+            raise ZoteroError("Ogiltig tagguppdatering.")
+        _, headers = self._request("PATCH", "items/" + item_key, {"tags": tags})
+        self.version = self._version(headers)

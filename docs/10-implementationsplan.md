@@ -3,7 +3,8 @@
 Aktuellt 2026-11-02: verklig läsning, godkänd import av fyra referenser och
 noll återstående åtgärder för samma urval är verifierade via användarens
 Actions-resultat. Notes-åtkomst är åtgärdad. Manuell Zotero-granskning och
-separat godkännande av daglig drift återstår; se 06-validering.md.
+daglig drift är nu godkänd och konfigurerad. Startutfall och första schemakörning
+återstår; se 06-validering.md.
 
 ## Etapp 0 – Bootstrap
 

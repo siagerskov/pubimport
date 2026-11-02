@@ -2,6 +2,17 @@
 
 ## 2026-11-02
 
+- Maskinläsbar status på separat automation-status-gren gör att resultat kan
+  följas via Git även när GitHubs API inte kan nås från utvecklingsmiljön.
+  Endast räknare/utfall publiceras; separat jobb har skrivrättighet till repo.
+
+- Användaren godkände rättning av pilot-taggen och hela det automatiska flödet.
+- Dagligt schema 05:23 UTC, full EDAT-sökning och högst tio nya referenser per
+  körning, fördelade mellan ämnena. Uppskjutna räknas; datumfönstrets köbegränsning dokumenterad.
+- Engångsrättning av exakt PMID 42960128 med bevarade metadata/övriga taggar och
+  verifiering efter PATCH. Vanlig synkning ändrar fortsatt aldrig manuella statusar.
+- Actions uppgraderade till officiellt upplösta v6-commits och Ubuntu 24.04.
+
 - Read-only pilotkontroll visar nu status-taggar, godkänd-samling och medlemskap
   i inkorgen inklusive undersamlingar efter användarens manuella granskning.
 

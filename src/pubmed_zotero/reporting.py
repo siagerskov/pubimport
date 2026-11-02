@@ -19,7 +19,9 @@ def action_summary(report):
         f"Saknad titel: {summary.get('metadata_missing', 0)} · "
         f"Importerade: {summary.get('imported', 0)}",
         "",
-        "### Hämtade artiklar",
+        f"Uppskjutna av importtak: {summary.get('deferred', 0)}",
+        "",
+        "### Artiklar i körplanen",
         "",
         "<table><tr><th>PMID</th><th>Titel</th><th>Sökning</th></tr>",
     ]

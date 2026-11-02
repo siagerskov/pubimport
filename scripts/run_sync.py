@@ -34,6 +34,12 @@ def run():
                 "--max-imports",
                 os.environ.get("MAX_IMPORTS", "10"),
             ]
+        if os.environ.get("SYNC_BATCH") == "true":
+            args += [
+                "--batch-imports",
+                "--max-imports",
+                os.environ.get("MAX_IMPORTS", "10"),
+            ]
     else:
         print("Okänt synkläge.", file=sys.stderr)
         return 2
@@ -42,6 +48,14 @@ def run():
         status = main(args)
     text = output.getvalue()
     print(text, end="")
+    if text.strip() and (output_path := os.environ.get("GITHUB_OUTPUT")):
+        completed = json.loads(text)
+        counts = completed.get("sync", {}).get("summary", completed["summary"])
+        with Path(output_path).open("a", encoding="utf-8") as output:
+            output.write("run_mode=" + completed["mode"] + "\n")
+            output.write(
+                "import_summary=" + json.dumps(counts, separators=(",", ":")) + "\n"
+            )
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path and status == 0:
         report = json.loads(text)

@@ -3,7 +3,8 @@
 Automatisk litteraturbevakning för MSK-radiologi och AI inom radiologi med en
 Zotero-inkorg för manuell granskning. **Version 0.2 implementerar synkningen och
 manuell körning. En fyrpostspilot och tom omkörningsplan är verifierade;
-manuell kvalitetskontroll och godkännande av daglig drift återstår.**
+daglig drift är godkänd och konfigurerad. Utfallet från startkörningen och
+första schemalagda körningen återstår att verifiera.**
 
 ## Eget sökverktyg
 
@@ -84,7 +85,9 @@ appskapade poster, en per sökning/version/query.
 ## Automatisering och kontroller
 
 GitHub Actions har manuella lägen `offline`, `dry-run` och `apply`, skyddat av
-importtak och concurrency. **Inget dagligt schema är aktiverat.** Se
+importtak och concurrency. Överskjutande träffar redovisas och kan hämtas
+vid nästa körning inom det 14-dagars datumfönstret. Vid större kö krävs extra
+körningar eller justerad kapacitet för att undvika att äldre träffar faller ur fönstret. **Dagligt schema: 05:23 UTC, högst tio nya referenser totalt.** Se
 [drift](docs/07-drift-underhall.md) för Secrets, miljöskydd och senare schema.
 
 ```bash

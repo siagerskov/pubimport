@@ -72,3 +72,19 @@ JavaScript-test, inte genom klinisk relevanssimulering.
 2. Klinisk granskning av sökstrategier och beslut om önskad precision/recall.
 3. Separat godkännande för dagligt schema, valt importtak och driftövervakning.
 4. Observerad lyckad körning av det godkända schemat; ingen sådan körning finns ännu.
+
+## Automatiskt flöde godkänt och förberett – 2026-11-02
+
+Användaren godkände rättning av den sista taggen och full automatisk drift.
+Lokalt: **110 Python-tester passerar**, inklusive uppdelning mellan sökningar,
+uppskjutna referenser, flera ikappbatchar utan dubbletter samt en riktad tagg-PATCH
+som bevarar andra fält och avbryter vid ändrad manuell status. Lint/format godkända.
+GitHub Actions-v6-commits upplösta via officiella Git-remotes.
+Verkligt utfall från engångsrättning/startimport och första tidstyrda körning
+är ännu inte observerat. Tidigare stycken som anger att godkännande återstår
+beskriver historiken; daglig drift är nu uttryckligen godkänd.
+
+Statuspubliceringens två tester verifierar att enbart den separata grenen
+uppdateras och att endast tillåtna heltalsräknare publiceras. Totalt **112
+Python-tester** passerar tillsammans med sju JavaScript-tester. Faktisk
+statuspublicering och startimport återstår tills körningen avslutats.

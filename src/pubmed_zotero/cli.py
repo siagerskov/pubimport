@@ -9,7 +9,7 @@ from pathlib import Path
 from .config import ConfigurationError, load_searches
 from .pipeline import discover
 from .pubmed import PubMedClient, PubMedError, parse_articles
-from .sync import ApplyError, apply_plan, plan_sync
+from .sync import ApplyError, apply_plan, bounded_plan, plan_sync
 from .zotero import Snapshot, ZoteroClient, ZoteroError
 
 
@@ -56,6 +56,11 @@ def main(argv=None) -> int:
     parser.add_argument("--confirm-library", help="Bekräfta mål-ID vid apply.")
     parser.add_argument(
         "--max-imports", type=int, default=10, help="Importtak, standard 10."
+    )
+    parser.add_argument(
+        "--batch-imports",
+        action="store_true",
+        help="Importera högst max-imports nya; redovisa övriga som uppskjutna.",
     )
     args = parser.parse_args(argv)
     if args.apply and (not args.live or not args.zotero):
@@ -105,7 +110,13 @@ def main(argv=None) -> int:
                     allow_writes=args.apply,
                 )
                 snapshot = zotero.snapshot()
-            plan = plan_sync(report, searches, snapshot)
+            if args.batch_imports:
+                report, plan, deferred = bounded_plan(
+                    report, searches, snapshot, args.max_imports
+                )
+                plan["summary"]["deferred"] = deferred
+            else:
+                plan = plan_sync(report, searches, snapshot)
             if args.apply:
                 if plan["summary"]["new"] > args.max_imports:
                     raise ZoteroError(

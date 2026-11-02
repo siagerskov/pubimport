@@ -237,3 +237,20 @@ def test_wrong_personal_library_key_is_rejected():
     c = ZoteroClient("123", "SECRET", opener=transport)
     with pytest.raises(ZoteroError, match="annat"):
         c.snapshot()
+
+
+def test_explicit_tag_patch_writes_only_tags_with_version_guard():
+    c, transport, _ = client(
+        Response([]), Response([]), Response(version=2), allow_writes=True
+    )
+    c.snapshot()
+    c.update_tags("AAAAAAAA", [{"tag": "status/godkand"}])
+    request = transport.requests[-1]
+    assert request.method == "PATCH"
+    assert json.loads(request.data) == {"tags": [{"tag": "status/godkand"}]}
+    assert (
+        dict((k.lower(), v) for k, v in request.header_items())[
+            "if-unmodified-since-version"
+        ]
+        == "1"
+    )
