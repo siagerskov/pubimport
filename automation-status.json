@@ -1,21 +1,53 @@
 {
-  "observed_at": "2026-11-02T13:53:31.438873+00:00",
-  "run_id": "41456837770",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41456837770",
+  "observed_at": "2026-11-02T14:42:48.444586+00:00",
+  "run_id": "41464377174",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41464377174",
   "result": "success",
   "event": "push",
   "mode": "dry-run",
   "import_summary": {
+    "searches": 3,
+    "total_hits": 484,
+    "unique_pmids": 456,
+    "imported": 0,
+    "errors": 0,
     "new": 20,
     "known": 14,
     "metadata_missing": 0,
     "review_updates": 0,
     "review_conflicts": 0,
-    "actions": 40,
-    "imported": 0,
-    "errors": 0,
-    "deferred": 407
+    "actions": 41,
+    "deferred": 422
   },
   "tag_fix": "",
-  "commit": "835e8a39a85ed614cb8cf5219b8cd5cd3918012a"
+  "commit": "47bf06d009669d18fa1a1d5c00a788b2846ee89c",
+  "searches": [
+    {
+      "search_id": "msk-radiology",
+      "search_version": "4",
+      "total_hits": 319,
+      "fetched": 319,
+      "date_type": "edat",
+      "start": "2026/10/20",
+      "end": "2026/11/02"
+    },
+    {
+      "search_id": "ai-radiology",
+      "search_version": "3",
+      "total_hits": 150,
+      "fetched": 150,
+      "date_type": "edat",
+      "start": "2026/10/20",
+      "end": "2026/11/02"
+    },
+    {
+      "search_id": "nph",
+      "search_version": "1",
+      "total_hits": 15,
+      "fetched": 15,
+      "date_type": "edat",
+      "start": "2026/10/20",
+      "end": "2026/11/02"
+    }
+  ]
 }
