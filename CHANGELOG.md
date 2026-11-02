@@ -2,6 +2,10 @@
 
 ## 2026-11-02
 
+- Godkända appreferenser sorteras i ämnessamlingar för MSK, AI och NPH.
+  Importkategorier och proveniens ger stöd även för tidigare godkända poster;
+  överlapp, manuella samlingar och konfliktskydd bevaras.
+
 - Kategoritak verifierade i verklig körning 41471950206: 46 nya referenser
   importerade utan fel, med dagens sluträkning AI 20, NPH 20 och MSK 20.
   Tidigare importer räknades med; återstående kvot noll i varje kategori.

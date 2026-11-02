@@ -103,6 +103,8 @@ def plan_sync(discovery, searches, snapshot: Snapshot):
     actions.extend(reviews["actions"])
     by_key = {item["key"]: item for item in items}
     for action in reviews["actions"]:
+        if action["action"] != "approve_item":
+            continue
         by_key[action["item"]]["data"].update(deepcopy(action["data"]))
     stats = {
         "new": 0,
@@ -204,7 +206,7 @@ def apply_plan(plan, client):
     try:
         for action in plan["actions"]:
             if action["action"] == "approve_item":
-                client.approve_item(action["item"], action["data"])
+                client.approve_item(action["item"], resolve(action["data"]))
                 summary["reviews_completed"] += 1
             elif action["action"] == "add_collections":
                 client.add_collections(

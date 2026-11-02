@@ -45,7 +45,8 @@ def test_collection_move_approves_and_removes_inbox_without_changing_metadata():
     result = apply_plan(plan, library)
     assert result["summary"]["reviews_completed"] == 2
     for item, before in zip(items, metadata, strict=True):
-        assert item["data"]["collections"] == [approved]
+        assert approved in item["data"]["collections"]
+        assert len(item["data"]["collections"]) == 3
         assert item["data"]["tags"] == [
             {"tag": "my-project", "type": 0},
             {"tag": "status/godkand"},
@@ -73,7 +74,7 @@ def test_approval_does_not_require_article_to_remain_in_pubmed_window():
     plan = plan_sync(report, searches, library.snapshot())
     assert len([a for a in plan["actions"] if a["action"] == "approve_item"]) == 2
     apply_plan(plan, library)
-    assert all(i["data"]["collections"] == [approved] for i in items)
+    assert all(approved in i["data"]["collections"] for i in items)
 
 
 def test_typo_status_is_normalized_and_approved_item_never_reenters_inbox():
@@ -89,7 +90,7 @@ def test_typo_status_is_normalized_and_approved_item_never_reenters_inbox():
     assert not any(a["action"] == "add_collections" for a in plan["actions"])
     apply_plan(plan, library)
     assert items[0]["data"]["tags"] == [{"tag": "status/godkand"}]
-    assert items[0]["data"]["collections"] == [approved]
+    assert approved in items[0]["data"]["collections"]
 
 
 def test_unmanaged_or_trashed_items_are_not_automatically_reviewed():
@@ -122,3 +123,63 @@ def test_hourly_runner_produces_valid_status_outputs(monkeypatch, tmp_path):
     lines = output.read_text().splitlines()
     assert lines[0] == "run_mode=apply"
     assert json.loads(lines[1].split("=", 1)[1])["reviews_completed"] == 2
+
+
+def test_legacy_provenance_sorts_already_approved_and_preserves_project():
+    from pubmed_zotero.sync import MARKER
+
+    library, items, approved = prepared()
+    project = library.create(
+        "collections", {"name": "Mitt projekt", "parentCollection": False}
+    )["key"]
+    for item in items:
+        item["data"].update(
+            extra=MARKER,
+            tags=[{"tag": "status/godkand"}],
+            collections=[approved, project],
+        )
+    apply_plan(review_plan(library.snapshot()), library)
+    for item in items:
+        assert project in item["data"]["collections"]
+        assert len(item["data"]["collections"]) == 4
+    assert not review_plan(library.snapshot())["actions"]
+
+
+def test_missing_topic_evidence_does_not_guess_from_title():
+    from pubmed_zotero.sync import MARKER
+
+    library, items, approved = prepared()
+    library.items = items
+    for item in items:
+        item["data"].update(
+            extra=MARKER, tags=[{"tag": "status/godkand"}], collections=[approved]
+        )
+    assert not review_plan(library.snapshot())["actions"]
+
+
+def test_nph_allocation_and_recovery_after_partial_write():
+    import pytest
+
+    from pubmed_zotero.sync import MARKER, ApplyError
+
+    library, items, approved = prepared()
+    library.items = items
+    for item in items:
+        item["data"].update(
+            extra=MARKER + "\nPubMed-Zotero Import Categories: nph",
+            tags=[{"tag": "status/godkand"}],
+            collections=[approved],
+        )
+    original = library.approve_item
+    from pubmed_zotero.zotero import ZoteroError
+
+    def fail(*args):
+        raise ZoteroError("simulated")
+
+    library.approve_item = fail
+    with pytest.raises(ApplyError):
+        apply_plan(review_plan(library.snapshot()), library)
+    library.approve_item = original
+    apply_plan(review_plan(library.snapshot()), library)
+    assert len([c for c in library.collections if c["data"]["name"] == "NPH"]) == 1
+    assert not review_plan(library.snapshot())["actions"]
