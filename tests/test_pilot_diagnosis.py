@@ -61,7 +61,8 @@ def test_manual_review_tags_and_collections_are_checked_without_changes():
     searches, _ = inputs()
     articles = FixtureReader(Path(__file__).parent / "fixtures/pubmed.xml").articles
     result = module().inspect(searches, articles, library.snapshot())
-    assert result["summary"]["actions"] == 0
+    assert result["summary"]["actions"] == 4
+    assert result["actions_by_type"] == {"create_collection": 2, "approve_item": 2}
     assert all(
         c["correct_approved_tag"] and c["in_approved_collection"] and not c["in_inbox"]
         for c in result["checks"]

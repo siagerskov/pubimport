@@ -139,3 +139,12 @@ uv run pytest
 Söksträngarna i `config/searches.yaml` är förslag som behöver klinisk granskning.
 Inga patientuppgifter, automatisk evidensgradering eller PDF-nedladdning ingår.
 Briefens ZIP är oförändrad. MIT föreslås som licens; ingen licens är ännu vald.
+
+## Ämnessortering av godkända referenser
+
+Godkännandekontrollen sorterar appskapade artiklar under **01 – Granskade och godkända**
+i **MSK-radiologi**, **AI inom radiologi** och **NPH**. Sparade importkategorier och
+appens proveniensanteckningar avgör tillhörigheten, även för tidigare godkända poster.
+Överlappande artiklar visas i flera ämnessamlingar utan dubbla referenser.
+Poster utan känt kategoriunderlag stannar i sin befintliga godkänd-samling.
+Egna samlingar, taggar, metadata och anteckningar bevaras; motstridiga statusar hoppas över.
