@@ -119,7 +119,7 @@ def test_changed_search_version_adds_only_provenance():
     library = Library()
     sync(library)
     searches, _ = inputs()
-    searches[0] = replace(searches[0], version="4")
+    searches[0] = replace(searches[0], version=str(int(searches[0].version) + 1))
     report = discover(searches, FixtureReader(ROOT / "tests/fixtures/pubmed.xml"))
     plan = plan_sync(report, searches, library.snapshot())
     assert [a["action"] for a in plan["actions"]] == ["create_note", "create_note"]

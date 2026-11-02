@@ -1,6 +1,6 @@
 # Sökstrategier
 
-De fullständiga körbara strängarna finns i `config/searches.yaml`, version `3`.
+De fullständiga körbara strängarna finns i `config/searches.yaml`, MSK version `4` och AI version `3`.
 De är förslag, inte kliniskt validerade slutliga strategier.
 
 ## Verklig dry-run 2026-11-02, version 1
@@ -74,3 +74,17 @@ Exporten använder JSON-citerade YAML-strängar, booleskt enabled, unika stabila
 1–365 dagars fönster och query-version. Den kan läsas av appens befintliga validator.
 Utkast lagras enbart efter ett uttryckligt klick i den lokala webbläsaren. Export
 och provlänk aktiverar ingen import; införande av YAML och pilot är separata steg.
+
+## MSK version 4 – användarens query, 2026-11-02
+
+Användaren lämnade den fullständiga MSK-strängen direkt i chatten. Den är införd
+exakt, med samma parenteser och fälttaggar. Jämfört med version 3 är enbart
+`fluoroscop*[Title]` och `tomosynthesis[Title]` borttagna från MSK:s modalitetsgrupp.
+AI-sökningen ligger kvar på version 3. Sökverktygets inbyggda grundförslag är
+synkroniserade; ett tidigare lokalt sparat webbläsarutkast kan fortfarande ha
+äldre innehåll och kan raderas med Radera lokalt utkast följt av omladdning.
+Relevans bedöms i kommande dry-run. Detta innebär inget godkännande av import.
+
+Användaren rapporterade 32 träffar vid sin manuella PubMed-sökning. Exakt
+datumfilter och söktid för den jämförelsen är inte fastställda; antalet ska
+inte direkt likställas med appens 14-dagars EDAT-resultat.

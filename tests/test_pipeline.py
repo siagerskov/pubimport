@@ -39,11 +39,15 @@ def test_overlap_provenance_dates_and_no_imports():
 
 def test_disabled_version_and_limit():
     searches = load_searches(CONFIG)
-    searches = [replace(searches[0], version="4"), replace(searches[1], enabled=False)]
+    next_version = str(int(searches[0].version) + 1)
+    searches = [
+        replace(searches[0], version=next_version),
+        replace(searches[1], enabled=False),
+    ]
     report = discover(searches, FixtureReader(FIXTURE), limit=1)
     assert report["summary"]["searches"] == 1
     assert report["summary"]["truncated"] is True
-    assert report["articles"][0]["provenance"][0]["search_version"] == "4"
+    assert report["articles"][0]["provenance"][0]["search_version"] == next_version
 
 
 def test_cli_offline_report(capsys, monkeypatch):

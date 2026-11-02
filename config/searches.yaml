@@ -2,16 +2,15 @@ searches:
 - id: msk-radiology
   title: MSK-radiologi
   enabled: true
-  version: '3'
+  version: '4'
   lookback_days: 14
-  description: 'Förslag med högre precision för pilot: radiologisk modalitet i titeln. Lägre recall förväntas; klinisk
-    granskning återstår.'
+  description: Användarens MSK-sökning 2026-11-02; radiologisk modalitet i titeln. Pilotimport och relevansgranskning
+    återstår.
   query: ("Musculoskeletal Diseases"[MeSH Terms] OR musculoskeletal[Title/Abstract] OR bone[Title/Abstract] OR joint[Title/Abstract]
     OR tendon*[Title/Abstract] OR ligament*[Title/Abstract] OR cartilage[Title/Abstract] OR menisc*[Title/Abstract]
     OR spine[Title/Abstract] OR spinal[Title/Abstract] OR knee[Title/Abstract] OR hip[Title/Abstract] OR shoulder[Title/Abstract]
     OR ankle[Title/Abstract]) AND (radiolog*[Title] OR MRI[Title] OR "MR imaging"[Title] OR "magnetic resonance
-    imaging"[Title] OR CT[Title] OR "computed tomography"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title]
-    OR fluoroscop*[Title] OR tomosynthesis[Title])
+    imaging"[Title] OR CT[Title] OR "computed tomography"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title])
 - id: ai-radiology
   title: AI inom radiologi
   enabled: true

@@ -2,6 +2,9 @@
 
 ## 2026-11-02
 
+- Infört användarens exakta MSK-query som version 4; fluoroskopi och tomosyntes
+  borttagna ur den sökningen. AI kvar på version 3. Sökverktygets grundförslag uppdaterade.
+
 - Fristående sökverktyg i `web/search-builder.html`: egna termer, OR/AND/NOT,
   val av titel/titel-abstract/alla fält, query-förhandsvisning och PubMed-länk.
 - Export till validerbar searches.yaml, automatisk versionshöjning från medföljande
