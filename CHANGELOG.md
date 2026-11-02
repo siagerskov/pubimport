@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+- Pilotdiagnos: fyra kända referenser men inga synliga barnanteckningar;
+  återstående plan omfattar fyra notes, inga nya referenser.
+- Infört kontroll av library/notes/write-permission via keys/current innan
+  synkning. Read-only-diagnosen visar enbart booleska rättigheter, aldrig nyckeln.
+
 - Användarens pilotlogg bekräftar fyra importerade referenser, men omkörningsplanen
   var inte tom. Fortsatt skrivning hålls avstängd under felsökningen.
 - Separat read-only pilotdiagnos för exakt de fyra importerade PMID:erna:

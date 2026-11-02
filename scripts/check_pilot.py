@@ -81,7 +81,15 @@ def run():
         os.environ.get("ZOTERO_LIBRARY_TYPE", "user"),
         allow_writes=False,
     )
-    result = inspect(searches, articles, client.snapshot())
+    permissions = client.permissions()
+    if not permissions["library"] or not permissions["notes"]:
+        result = {
+            "key_permissions": permissions,
+            "diagnosis": "Läsbehörighet saknas. Ingen reparation görs.",
+        }
+    else:
+        result = inspect(searches, articles, client.snapshot())
+        result["key_permissions"] = permissions
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if path := os.environ.get("GITHUB_STEP_SUMMARY"):
         summary = "## Pilotdiagnos – enbart läsning\n\n"

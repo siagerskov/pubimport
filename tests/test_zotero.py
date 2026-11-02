@@ -35,11 +35,10 @@ class Transport:
 def client(*responses, **kwargs):
     transport = Transport(*responses)
     waits = []
-    return (
-        ZoteroClient("123", "SECRET", opener=transport, sleep=waits.append, **kwargs),
-        transport,
-        waits,
-    )
+    c = ZoteroClient("123", "SECRET", opener=transport, sleep=waits.append, **kwargs)
+    # Isolate paging from permissions; dedicated tests cover the scope check.
+    c._access_checked = True
+    return c, transport, waits
 
 
 def collection(key="AAAAAAAA"):
@@ -184,3 +183,57 @@ def test_redirect_is_never_followed():
 def test_invalid_configuration(library_id, key, kind):
     with pytest.raises(ZoteroError):
         ZoteroClient(library_id, key, kind)
+
+
+def test_missing_notes_permission_stops_before_reading_or_writing_library():
+    transport = Transport(
+        Response(
+            {
+                "key": "SECRET",
+                "userID": 123,
+                "access": {"user": {"library": True, "notes": False, "write": True}},
+            }
+        )
+    )
+    c = ZoteroClient("123", "SECRET", opener=transport, allow_writes=True)
+    with pytest.raises(ZoteroError, match="Allow notes access"):
+        c.snapshot()
+    assert len(transport.requests) == 1
+    assert transport.requests[0].full_url == "https://api.zotero.org/keys/current"
+    assert c.permissions() == {"library": True, "notes": False, "write": True}
+    assert "SECRET" not in str(c.permissions())
+
+
+def test_complete_permissions_allow_snapshot_and_are_checked_once():
+    transport = Transport(
+        Response(
+            {
+                "key": "SECRET",
+                "userID": 123,
+                "access": {"user": {"library": True, "notes": True, "write": True}},
+            }
+        ),
+        Response([]),
+        Response([]),
+        Response([]),
+        Response([]),
+    )
+    c = ZoteroClient("123", "SECRET", opener=transport)
+    c.snapshot()
+    c.snapshot()
+    assert len(transport.requests) == 5
+    assert sum("/keys/current" in r.full_url for r in transport.requests) == 1
+
+
+def test_wrong_personal_library_key_is_rejected():
+    transport = Transport(
+        Response(
+            {
+                "userID": 999,
+                "access": {"user": {"library": True, "notes": True, "write": True}},
+            }
+        )
+    )
+    c = ZoteroClient("123", "SECRET", opener=transport)
+    with pytest.raises(ZoteroError, match="annat"):
+        c.snapshot()

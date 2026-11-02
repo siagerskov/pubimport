@@ -1,4 +1,5 @@
 name: Read-only pilot diagnosis
+# Includes key permission metadata, never credential values.
 on:
   push:
     branches: [main]

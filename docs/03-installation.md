@@ -22,7 +22,9 @@ cache. Inga konton eller hemligheter behövs för dessa kontroller.
 
 1. Skapa/logga in på ditt Zotero-konto och välj personligt bibliotek eller grupp.
 2. På Zoteros webbplats, Settings → Feeds/API, skapa en ny privat API-nyckel.
-   Ge endast åtkomst till det avsedda biblioteket. För verklig import krävs
+   Ge endast åtkomst till det avsedda biblioteket. Aktivera även **Allow notes access**
+   för personliga bibliotek, så att appen kan läsa proveniensanteckningar vid omkörning.
+   För verklig import krävs
    skrivrättighet; börja med read-only om du vill prova enbart dry-run.
 3. Notera numeriskt user ID (eller group ID för gruppbibliotek). Det är inte
    användarnamnet. `ZOTERO_LIBRARY_TYPE` är `user` eller `group`.

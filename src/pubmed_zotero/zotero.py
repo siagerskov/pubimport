@@ -90,6 +90,9 @@ class ZoteroClient:
             raise ZoteroError(
                 "Zotero kräver nyckel och bibliotekstyp user eller group."
             )
+        self.library_id, self.library_type = library_id, library_type
+        self._access_checked = False
+        self._permissions = None
         self.base = f"https://api.zotero.org/{library_type}s/{library_id}/"
         self.api_key = api_key
         self.opener = opener or build_opener(NoRedirect()).open
@@ -102,6 +105,8 @@ class ZoteroClient:
             raise ZoteroError(
                 "Skrivning kräver uttryckligt apply-läge och läst bibliotek."
             )
+        if method != "GET" and not self._access_checked:
+            self.check_access()
         body = (
             json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()
             if payload is not None
@@ -117,7 +122,12 @@ class ZoteroClient:
             headers["If-Unmodified-Since-Version"] = str(self.version)
             if method == "POST":
                 headers["Zotero-Write-Token"] = hashlib.sha256(body).hexdigest()[:32]
-        request = Request(self.base + path, data=body, headers=headers, method=method)
+        url = (
+            "https://api.zotero.org" + path
+            if path.startswith("/")
+            else self.base + path
+        )
+        request = Request(url, data=body, headers=headers, method=method)
         for attempt in range(self.attempts):
             delay = 2**attempt
             try:
@@ -224,7 +234,50 @@ class ZoteroClient:
         validate_records(records, kind)
         return records, version
 
+    def permissions(self):
+        if self._permissions is not None:
+            return self._permissions
+        data, _ = self._request("GET", "/keys/current")
+        try:
+            access = data["access"]
+            if self.library_type == "user":
+                if str(data["userID"]) != self.library_id:
+                    raise ZoteroError("Nyckeln tillhör ett annat personligt bibliotek.")
+                target = access["user"]
+                notes = target.get("notes") is True
+            else:
+                groups = access["groups"]
+                target = groups.get(self.library_id, groups.get("all", {}))
+                # Group access includes notes; personal libraries have a separate scope.
+                notes = target.get("library") is True
+            self._permissions = {
+                "library": target.get("library") is True,
+                "notes": notes,
+                "write": target.get("write") is True,
+            }
+        except (KeyError, TypeError, AttributeError):
+            raise ZoteroError(
+                "API-nyckelns behörigheter kunde inte verifieras."
+            ) from None
+        # Discard the raw metadata response; it may contain the key itself.
+        return self._permissions
+
+    def check_access(self):
+        if self._access_checked:
+            return
+        permissions = self.permissions()
+        if not permissions["library"]:
+            raise ZoteroError("API-nyckeln saknar åtkomst till biblioteket.")
+        if not permissions["notes"]:
+            raise ZoteroError(
+                "API-nyckeln saknar Allow notes access; synkningen stoppas."
+            )
+        if self.allow_writes and not permissions["write"]:
+            raise ZoteroError("API-nyckeln saknar skrivrättighet.")
+        self._access_checked = True
+
     def snapshot(self):
+        self.check_access()
         collections, version = self._list("collections")
         items, version = self._list("items", version)
         self.version = version

@@ -21,3 +21,10 @@ förhindrar blind överskrivning vid samtidiga ändringar; redirects med nycklar
 återkalla komprometterad nyckel i Zotero/NCBI och ersätt den i Secrets; rensa
 exponerade loggar och granska biblioteket. Att ta bort en nyckel ur senaste
 commit räcker inte om den funnits i Git-historik.
+
+Personliga bibliotek kräver Allow notes access utöver library. Appen kontrollerar
+key-metadata via `/keys/current` och stoppar synkning om notes inte får läsas.
+Endast booleska behörigheter behålls; nyckelvärdet i metadata skrivs aldrig ut.
+Utan notes-åtkomst kan redan skapade anteckningar vara osynliga, vilket gör
+omkörningskontrollen ofullständig. Skapa inga ersättningsanteckningar förrän
+full läsåtkomst verifierats.

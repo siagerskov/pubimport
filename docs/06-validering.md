@@ -59,3 +59,12 @@
 - Normalisering av PMID, DOI, titel, författare, datum, tidskrift och abstract.
 - JSON-rapport med proveniens och sammanslagning av överlappande PMID inom körningen.
 - Syntetiskt offline-läge och mockade integrationstester. Ingen Zotero-skrivning.
+
+## Pilotdiagnos 41444085669 – 2026-11-02
+
+Fyra referenser känns igen som appskapade; alla har noll synliga child notes.
+Planen innehåller enbart fyra create_note och inga nya referenser. Detta
+bevisar inte att anteckningarna saknas: en nyckel utan Allow notes access kan
+göra dem osynliga. Kontroll av keys/current tillagd och synkning spärras utan
+full notes-läsning. En ny read-only-diagnos ska bekräfta de faktiska rättigheterna
+innan någon reparation övervägs.
