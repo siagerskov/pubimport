@@ -36,7 +36,15 @@ def action_summary(report):
             )
             + "</tr>"
         )
-    rows += ["</table>", "", "Bedöm relevans och metadata före pilotimport."]
+    rows += [
+        "</table>",
+        "",
+        (
+            "Kontrollera de importerade posterna manuellt i Zotero."
+            if report["mode"] == "apply"
+            else "Bedöm relevans och metadata före pilotimport."
+        ),
+    ]
     if report["mode"] == "dry-run":
         rows.append("Dry-run har inte ändrat Zotero.")
     return "\n".join(rows) + "\n"

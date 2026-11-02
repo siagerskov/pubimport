@@ -2,6 +2,12 @@
 
 ## 2026-11-02
 
+- Användarens pilotlogg bekräftar fyra importerade referenser, men omkörningsplanen
+  var inte tom. Fortsatt skrivning hålls avstängd under felsökningen.
+- Separat read-only pilotdiagnos för exakt de fyra importerade PMID:erna:
+  antal kända poster, återstående åtgärdstyper och igenkänd proveniens, utan att
+  skriva ut övriga biblioteksanteckningar eller göra någon reparation.
+
 - Användaren godkände pilot med högst fyra nya referenser. Engångsworkflow
   för exakt godkänd push, utan möjlighet till automatisk import via re-run.
 - Pilot hämtar högst två träffar per sökning, fryser urvalet och verifierar
