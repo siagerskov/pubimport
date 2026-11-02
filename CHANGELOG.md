@@ -2,6 +2,9 @@
 
 ## 2026-11-02
 
+- Read-only pilotkontroll visar nu status-taggar, godkänd-samling och medlemskap
+  i inkorgen inklusive undersamlingar efter användarens manuella granskning.
+
 - Efter ändrad notes-behörighet verifierar verklig read-only-diagnos 41445005452
   fyra kända pilotposter, rätt befintlig proveniens och noll återstående åtgärder.
   Ingen reparation eller dubbelimport behövdes. Manuell kvalitetskontroll återstår.

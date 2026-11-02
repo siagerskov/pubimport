@@ -10,7 +10,7 @@ from pathlib import Path
 from pubmed_zotero.config import load_searches
 from pubmed_zotero.deduplication import match
 from pubmed_zotero.pubmed import PubMedClient
-from pubmed_zotero.sync import MARKER, plan_sync, provenance_note
+from pubmed_zotero.sync import APPROVED, INBOX, MARKER, plan_sync, provenance_note
 from pubmed_zotero.zotero import ZoteroClient
 
 TARGETS = {
@@ -41,6 +41,20 @@ def inspect(searches, articles, snapshot):
             )
     report = {"articles": entries}
     plan = plan_sync(report, searches, snapshot)
+    collections = {c["key"]: c["data"] for c in snapshot.collections}
+    inbox_keys = {key for key, data in collections.items() if data["name"] == INBOX}
+    while True:
+        expanded = inbox_keys | {
+            key
+            for key, data in collections.items()
+            if data.get("parentCollection") in inbox_keys
+        }
+        if expanded == inbox_keys:
+            break
+        inbox_keys = expanded
+    approved_keys = {
+        key for key, data in collections.items() if data["name"] == APPROVED
+    }
     checks = []
     for entry in entries:
         existing = match(entry["article"], snapshot.items)
@@ -53,7 +67,25 @@ def inspect(searches, articles, snapshot):
                 and i["data"]["itemType"] == "note"
             ]
             marker, _ = provenance_note(entry["provenance"][0], existing["key"])
+            data = existing["data"]
+            memberships = set(data.get("collections", []))
+            statuses = sorted(
+                {
+                    tag["tag"]
+                    for tag in data.get("tags", [])
+                    if tag["tag"].startswith("status/")
+                }
+            )
             row.update(
+                status_tags=statuses,
+                correct_approved_tag=statuses == ["status/godkand"],
+                in_inbox=bool(memberships & inbox_keys),
+                in_approved_collection=bool(memberships & approved_keys),
+                collections=[
+                    collections[key]["name"]
+                    for key in sorted(memberships)
+                    if key in collections
+                ],
                 managed=MARKER in existing["data"].get("extra", "").splitlines(),
                 child_notes=len(notes),
                 expected_provenance_found=any(
