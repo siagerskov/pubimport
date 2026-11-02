@@ -14,7 +14,7 @@ APPROVED = "01 – Granskade och godkända"
 PROJECTS = "02 – Projekt och litteraturöversikter"
 
 
-def item_payload(article, collections):
+def item_payload(article, collections, categories=()):
     creators = []
     for author in article["authors"]:
         if author["collective"]:
@@ -36,7 +36,12 @@ def item_payload(article, collections):
         "abstractNote": article["abstract"] or "",
         "DOI": normalize_doi(article["doi"] or ""),
         "url": f"https://pubmed.ncbi.nlm.nih.gov/{article['pmid']}/",
-        "extra": f"PMID: {article['pmid']}\n{MARKER}",
+        "extra": f"PMID: {article['pmid']}\n{MARKER}"
+        + (
+            "\nPubMed-Zotero Import Categories: " + ",".join(sorted(set(categories)))
+            if categories
+            else ""
+        ),
         "collections": collections,
         "tags": [{"tag": "status/ej-granskad"}],
     }
@@ -150,7 +155,9 @@ def plan_sync(discovery, searches, snapshot: Snapshot):
                 continue
             stats["new"] += 1
             parent = f"item:{article['pmid']}"
-            payload = item_payload(article, desired)
+            payload = item_payload(
+                article, desired, [p["search_id"] for p in entry["provenance"]]
+            )
             actions.append({"action": "create_item", "ref": parent, "data": payload})
             items.append({"key": parent, "data": payload})
         for provenance in entry["provenance"]:
@@ -221,12 +228,21 @@ def apply_plan(plan, client):
     return {"mode": "apply", "summary": summary}
 
 
-def bounded_plan(report, searches, snapshot, maximum):
+def bounded_plan(
+    report, searches, snapshot, maximum, *, newest_first=False, category_limits=None
+):
     """Validate the full set, then fairly select at most maximum new references."""
-    if maximum < 1:
-        raise ValueError("Positive import cap required")
+    if maximum < 0:
+        raise ValueError("Nonnegative import allowance required")
+    if newest_first:
+        from .daily import publication_key
+
+        report = {
+            **report,
+            "articles": sorted(report["articles"], key=publication_key, reverse=True),
+        }
     full = plan_sync(report, searches, snapshot)
-    if full["summary"]["new"] <= maximum:
+    if category_limits is None and full["summary"]["new"] <= maximum:
         return report, full, 0
     buckets = {}
     included = set()
@@ -238,7 +254,27 @@ def bounded_plan(report, searches, snapshot, maximum):
             topic = entry["provenance"][0]["search_id"]
             buckets.setdefault(topic, []).append(article["pmid"])
     selected = 0
-    while selected < maximum and any(buckets.values()):
+    remaining = dict(category_limits) if category_limits is not None else None
+    if newest_first or remaining is not None:
+        for entry in report["articles"]:
+            pmid = entry["article"]["pmid"]
+            if pmid not in included and selected < maximum:
+                categories = {p["search_id"] for p in entry["provenance"]}
+                if remaining is not None and any(
+                    remaining.get(c, 0) < 1 for c in categories
+                ):
+                    continue
+                included.add(pmid)
+                selected += 1
+                if remaining is not None:
+                    for category in categories:
+                        remaining[category] -= 1
+    while (
+        not newest_first
+        and remaining is None
+        and selected < maximum
+        and any(buckets.values())
+    ):
         for bucket in buckets.values():
             if bucket and selected < maximum:
                 included.add(bucket.pop(0))

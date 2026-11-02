@@ -2,6 +2,13 @@
 
 ## 2026-11-02
 
+- Användaren godkände historisk import för AI och NPH från 2018, nyast först,
+  och förtydligade **20 nya per kategori och svensk kalenderdag**, inte gemensamt.
+- Ursprunglig importkategori sparas på nya poster. Samma dygnsräkning gäller
+  schemalagda och manuella jobb; överlapp räknas mot båda kategorierna.
+- Senaste publiceringsåret bearbetas först och därefter äldre år vid behov.
+  Endast nödvändiga kandidatmetadata hämtas; kända referenser dupliceras inte.
+
 - Dokumentationen konsoliderad till aktuellt flöde: 20-tak, timvis godkännande,
   separata NPH/AI-bevakningar och retrospektiv PDAT. Äldre utfall tydligt historik.
 - Retrospektiv read-only-körning verifierad: AI 17977 och NPH 2008 träffar sedan

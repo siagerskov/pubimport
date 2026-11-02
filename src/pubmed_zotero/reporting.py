@@ -20,7 +20,7 @@ def action_summary(report):
         f"Saknad titel: {summary.get('metadata_missing', 0)} · "
         f"Importerade: {summary.get('imported', 0)}",
         "",
-        f"Uppskjutna av importtak: {summary.get('deferred', 0)}",
+        f"Uppskjutna i hämtat urval: {summary.get('deferred', 0)}",
         f"Automatiska godkännanden: {reviewed} · "
         f"Statuskonflikter: {summary.get('review_conflicts', 0)}",
         "",
@@ -33,6 +33,23 @@ def action_summary(report):
         rows[2:2] = [
             f"Retrospektiv sökning: {dates['start']}–{dates['end']} "
             f"({dates['date_type'].upper()}).",
+            "",
+        ]
+    if report.get("daily_budget"):
+        budget = report["daily_budget"]
+        rows[2:2] = [
+            f"Dagstak: {budget['cap_per_category']} per kategori "
+            f"({budget['date']}, svensk tid).",
+            "",
+        ]
+    if report.get("daily_budget_after"):
+        after = report["daily_budget_after"]
+        rows[2:2] = [
+            "Dagens importer per kategori: "
+            + ", ".join(
+                f"{category} {count}/{after['cap_per_category']}"
+                for category, count in after["used"].items()
+            ),
             "",
         ]
     for entry in report["articles"]:

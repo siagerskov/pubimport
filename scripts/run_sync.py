@@ -51,6 +51,8 @@ def run():
         for search_id in os.environ.get("SYNC_SEARCH_IDS", "").split(","):
             if search_id.strip():
                 args += ["--search-id", search_id.strip()]
+    if mode != "offline":
+        args += ["--newest-first", "--per-category"]
     output = io.StringIO()
     with redirect_stdout(output):
         status = main(args)
@@ -64,6 +66,11 @@ def run():
         }
         with Path(output_path).open("a", encoding="utf-8") as output:
             output.write("run_mode=" + completed["mode"] + "\n")
+            output.write(
+                "daily_budget="
+                + json.dumps(completed.get("daily_budget", {}), separators=(",", ":"))
+                + "\n"
+            )
             search_stats = [
                 {
                     k: row[k]

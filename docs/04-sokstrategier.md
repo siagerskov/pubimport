@@ -63,8 +63,9 @@ queryändringar. En gammal nedladdad HTML-fil behöver ersättas med senaste ver
 
 ## Datum
 
-Löpande bevakning: 14 kalenderdagar inklusive idag UTC på EDAT, när posten
-registrerats i PubMed. Detta fångar överlapp men inte alla sent korrigerade poster.
+MSK-bevakning: 14 kalenderdagar inklusive idag UTC på EDAT, när posten
+registrerats i PubMed. AI och NPH använder nu fast start 2018 och PDAT även
+i dagliga återfyllnadsjobbet, med nyaste kandidater först.
 Retrospektivt: 2018-01-01 till vald slutdag på PDAT, publiceringsdatum enligt
 PubMed. Resultatantal från dessa datumtyper kan inte direkt jämföras.
 Se 11-retrospektiv-import.md för intervall, provurval och granskad import.

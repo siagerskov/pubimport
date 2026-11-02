@@ -7,6 +7,7 @@ import sys
 from datetime import UTC, date, datetime
 from pathlib import Path
 
+from .budget import daily_allowances
 from .config import ConfigurationError, load_searches
 from .pipeline import discover
 from .pubmed import PubMedClient, PubMedError, parse_articles
@@ -75,6 +76,12 @@ def main(argv=None) -> int:
     parser.add_argument(
         "--search-id", action="append", help="Välj bevakning; kan upprepas."
     )
+    parser.add_argument(
+        "--per-category", action="store_true", help="Batchtak per kategori."
+    )
+    parser.add_argument(
+        "--newest-first", action="store_true", help="Nyaste publiceringsdatum först."
+    )
     args = parser.parse_args(argv)
     if args.until_date and not args.from_date:
         parser.error("--until-date kräver --from-date")
@@ -141,15 +148,35 @@ def main(argv=None) -> int:
                     allow_writes=args.apply,
                 )
                 snapshot = zotero.snapshot()
-            if args.batch_imports:
+            budget = daily_allowances(snapshot, [s.id for s in searches])
+            report["daily_budget"] = budget
+            limits = {
+                c: min(left, args.max_imports)
+                for c, left in budget["remaining"].items()
+            }
+            if args.batch_imports or args.apply:
+                maximum = (
+                    sum(limits.values()) if args.per_category else args.max_imports
+                )
                 report, plan, deferred = bounded_plan(
-                    report, searches, snapshot, args.max_imports
+                    report,
+                    searches,
+                    snapshot,
+                    maximum,
+                    newest_first=args.newest_first,
+                    category_limits=limits,
                 )
                 plan["summary"]["deferred"] = deferred
+                if args.apply and not args.batch_imports and deferred:
+                    raise ZoteroError(
+                        "Importtaket eller dagens kategoritak överskreds."
+                    )
             else:
                 plan = plan_sync(report, searches, snapshot)
             if args.apply:
-                if plan["summary"]["new"] > args.max_imports:
+                if plan["summary"]["new"] > (
+                    sum(limits.values()) if args.per_category else args.max_imports
+                ):
                     raise ZoteroError(
                         "Importtaket överskreds; begränsa urvalet eller välj nytt tak."
                     )

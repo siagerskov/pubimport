@@ -7,20 +7,21 @@ flödet. `pubmed-sync.yml` kör nu varje dag **05:23 UTC**. Det motsvarar 06:23
 svensk vintertid och 07:23 sommartid. GitHub kan fördröja schemalagda körningar;
 ingen exakt leveranstid garanteras.
 
-Varje schemalagd körning hämtar hela det konfigurerade 14-dagars EDAT-fönstret,
-läser Zotero inklusive anteckningar och papperskorg och importerar **högst tjugo
-nya referenser totalt**. Tillgängliga platser fördelas växelvis mellan sökningarna.
-Nya referenser får status/ej-granskad och rätt ämnessamling under inkorgen.
-Befintliga metadata bevaras. Status ändras enbart genom den användargodkända
-samlingsstyrda godkännanderegeln som beskrivs nedan.
+Varje schemalagd körning importerar högst **20 nya per kategori och svensk
+kalenderdag**. AI och NPH återfylls från 2018 på PDAT, nyast först. MSK behåller
+14-dagars EDAT och ett eget tak på 20. Överlapp skapar en post och belastar båda
+berörda kategorier. Redan importerade poster läses tillbaka och dupliceras inte.
 
-Hela urvalets identifierarkonflikter kontrolleras innan en delmängd väljs.
-Överskjutande nya referenser redovisas som `deferred`/Uppskjutna av importtak.
-De kan komma med vid senare körningar så länge de ligger kvar i EDAT-fönstret.
-**Det finns ingen beständig kö:** om inflödet överstiger tjugo per dag, eller ett
-långt driftavbrott inträffar, kan äldre ej importerade träffar falla ur fönstret.
-Granska uppskjutna antal; kör fler manuella batchar eller ändra tak/fönster vid
-behov. Appen hävdar inte fullständig litteraturbevakning under en växande kö.
+Dygnsräkningen använder Europe/Stockholm och Zoteros dateAdded samt stabil
+importkategori. Den gäller också manuella körningar. Postflytt till godkänd
+eller papperskorg nollställer inte räkningen. Metadata/ursprung måste kunna
+verifieras; annars avbryts importen. Se 11-retrospektiv-import.md för detaljer.
+
+AI/NPH-kandidater hämtas med senaste året först och äldre år besöks när nyare
+inte fyller återstående utrymme. Ingen full metadatahämtning av alla 20000
+historiska träffar görs för varje daglig tjugobatch. Rapportens deferred gäller
+hämtat urval; äldre år och unexamined_pmids kan återstå. MSK:s rullande fönster
+har fortsatt risk för bortfall om nytillflödet överskrider dess kapacitet.
 
 `contents: read`, timeout 30 minuter och concurrency utan avbrott av pågående jobb
 används. Körmiljön är Ubuntu 24.04; checkout/setup-python är låsta till officiella
@@ -47,10 +48,11 @@ Actions → PubMed to Zotero → Run workflow:
 - `dry-run`: läser API:erna, skriver bara plan; säkert standardval.
 - `apply`: import till explicit bekräftat bibliotek. Sätt confirm_library till
   rätt numeriskt ID. Limit `all` söker hela fönstret; positiv siffra begränsar
-  antal hämtade per sökning. max_imports styr batchens globala tak, standard tjugo.
+  antal hämtade per sökning. max_imports styr batchtak per kategori, alltid begränsat av dagens återstående 20.
 
 För extra ikappkörning: välj apply, limit all, max_imports 20 och bekräftat ID.
-Inga redan kända referenser ska skapas igen. Normal CLI utan --batch-imports
+Extra körning samma dag nollställer inte kategoriräkningen. Inga redan kända
+referenser ska skapas igen. Normal CLI utan --batch-imports
 behåller tidigare skydd: överskridet --max-imports avbryter hela planen.
 
 Pausa automatiseringen via Actions → PubMed to Zotero → meny → Disable workflow.
@@ -116,10 +118,10 @@ Statusjobbet har repository-skrivrättighet men saknar Zotero-nyckel.
 För nya sökningar används web/search-builder.html och config/searches.yaml.
 Aktuella separata bevakningar är MSK, AI inom bilddiagnostik och NPH. En ny query
 behöver inget nytt workflow; dess samling identifieras/skapas vid import.
-Daglig bevakning använder fortfarande EDAT och ett gemensamt tjugotak.
+MSK använder EDAT. AI/NPH använder PDAT från 2018. Varje kategori har eget tjugotak per svensk kalenderdag.
 
 Retrospective PubMed search använder separat PDAT-intervall från 2018 och egna
-sök-ID:n; se 11-retrospektiv-import.md. Standardläget är dry-run. Faktisk återfyllnad föreslås börja med NPH,
-publiceringsår 2018 och högst 20 nya, men behöver uttryckligt batchgodkännande.
+sök-ID:n; se 11-retrospektiv-import.md. Standardläget är dry-run. Återfyllnaden är nu uttryckligen godkänd för AI och NPH från 2018,
+nyast först, högst 20 per kategori/dag. Det är inte längre ett förslag om enbart NPH år 2018.
 Vanliga pushar startar ingen historisk import. Retrospektiv status ligger i
 backfill-status/backfill-status.json.

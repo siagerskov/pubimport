@@ -75,3 +75,12 @@ historisk bulkimport startas enbart för att en ny query lagts till.
 Användaren valde NPH utan bilddiagnostiskt filter och AI inom bilddiagnostik som
 separata sökningar. Inget påtvingat AI/NPH-intersektionfilter. Samma artikel kan
 matcha båda med en biblioteksreferens och flera ämneskopplingar/provenienser.
+
+## ADR 012 – Separata dygnstak och nyast-först-återfyllnad
+
+Användaren godkände AI/NPH från 2018 och förtydligade 20 per kategori/dag.
+Skapade referenser räknas i Europe/Stockholm; ursprungskategorier sparas atomärt
+på ny post. Legacy räknas via ursprunglig proveniens vars söktid föregår
+skapandet, inte via senare tillagda källanteckningar. Överlapp räknas mot båda.
+Årsvisa ID-sökningar börjar med senaste året; bara nödvändig kandidatmetadata
+hämtas. Detta ersätter ett gemensamt tjugotak och tidigare växelvis urval.

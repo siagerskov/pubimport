@@ -19,10 +19,10 @@ Zotero bibliotek + notes → konsistent snapshot → PMID/DOI-kontroll
                               status/godkand + borttagning ur inkorgsträdet
 ```
 
-Daglig körning: 05:23 UTC, 14-dagars EDAT-fönster och högst **20 nya referenser
-per körning**. Timkontroll: minut 08 UTC, inga nya referenser. GitHub kan fördröja
-körningar. En manuell retrospektiv sökning använder PDAT-publiceringsdatum från
-2018-01-01; den ändrar inte den dagliga bevakningens datumfönster.
+Daglig körning: 05:23 UTC och högst **20 nya per kategori och svensk kalenderdag**.
+MSK använder 14-dagars EDAT. AI och NPH återfylls från 2018 med PDAT, nyast först. Timkontroll: minut 08 UTC, inga nya referenser. GitHub kan fördröja
+körningar. En separat manuell retrospektiv sökning finns också. Den använder samma
+kategorivisa dygnstak och kan inte ge ytterligare 20 samma dag.
 
 Det fristående sökverktyget bygger queries och exporterar searches.yaml utan
 credentials eller server. GitHub Actions håller API-nycklar i Secrets. Diagnostik

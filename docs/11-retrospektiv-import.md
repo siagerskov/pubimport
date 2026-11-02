@@ -1,78 +1,79 @@
-# Retrospektiv sökning och import från 2018
+# Retrospektiv återfyllnad från 2018 – AI och NPH
 
-## Omfattning
+## Godkänd omfattning och dygnstak
 
-AI inom bilddiagnostik (`ai-radiology`) och normaltryckshydrocefalus (`nph`)
-är separata bevakningar. NPH har inget krav på bilddiagnostik eller AI.
-MSK finns kvar i den löpande bevakningen men ingår inte i standardvalet för historik.
+Användaren har uttryckligen godkänt återfyllnad för **AI inom bilddiagnostik** och
+**NPH**, separat, från 2018-01-01. Ordning: **nyast först**. Taket är **20 nya
+referenser per kategori och svensk kalenderdag**, inte ett gemensamt tjugotak.
+MSK har kvar sitt eget tak på 20 och sitt rullande 14-dagarsfönster.
 
-Historiskt startdatum är **2018-01-01**, inklusive. Slutdatum är dagens UTC-datum
-om inget annat anges. Datumtypen är **PDAT**, publiceringsdatum. Det är ett annat
-urval än den dagliga bevakningens 14-dagars EDAT (registrering i PubMed).
-PDAT följer PubMeds datumtolkning, inte ett lokalt antagande om online-/tryckdatum.
+En artikel som matchar både AI och NPH skapas en gång i Zotero men belastar båda
+kategoriernas tak. Är ett av taken fullt väntar den överlappande nya artikeln.
+Tidigare kända referenser dupliceras inte. Metadata/manuella statusar bevaras;
+samlingsstyrt godkännande fungerar även för äldre importer.
 
-## Första steget: antal och provurval utan skrivning
+## Automatisk arbetsgång
+
+PubMed to Zotero kör dagligen 05:23 UTC. AI och NPH söker på **PDAT**, PubMeds
+publiceringsdatum. Körningen börjar med innevarande år och går bakåt till 2018
+när nyare material redan importerats eller inte fyller återstående kategoriutrymme.
+MSK körs parallellt mot EDAT, registrering i PubMed, i 14 kalenderdagar.
+
+Sökningarna hämtar först identifierare. Kända PMID kräver inte ny metadatahämtning
+när proveniensen redan finns. Metadata hämtas i kandidatbatchar för att hitta
+återstående nya referenser. Kandidater sorteras efter källans bibliografiska
+publiceringsdatum; okänd dag/månad fabriceras inte. PMID används vid lika datum.
+PubMeds server-sortering används för identifierarsidorna. Poster med osäker
+eller ofullständig datering kan inte garanteras en exakt kronologisk inbördes ordning.
+
+Stora datumintervall över 9999 träffar delas rekursivt i icke överlappande delar.
+Oförenliga counts eller saknad metadata stoppar körningen i stället för att ge
+tyst ofullständiga resultat. Fler än 9999 på en enskild dag kräver snävare query.
+
+## En gemensam dygnsräkning per kategori
+
+Dagen räknas i **Europe/Stockholm**, inte GitHubs UTC-dygn. Alla importvägar,
+även manuella historikkörningar, räknar redan sparade appreferenser via Zoteros
+dateAdded. Papperskorgsposter räknas fortfarande. Nya referenser får en stabil
+kategoriangivelse i appens Extra-metadata vid skapandet. Äldre appposter utan
+den markören räknas via sina proveniensanteckningar. Om datum/kategori inte kan
+verifieras stoppas importen; programmet antar inte att dagens förbrukning är noll.
+
+Manuell flytt till godkänd-samlingen påverkar inte förbrukningen. Att köra jobbet
+igen ger bara dagens återstående utrymme. Fullständig permanent radering eller
+manuell borttagning av appens ursprungsmetadata kan göra historisk räkning
+omöjlig; gör inte det för att försöka skapa mer importutrymme.
+
+## Manuell kontroll och avgränsad körning
 
 Actions → Retrospective PubMed search → Run workflow:
 
-- from_date: 2018-01-01
-- until_date: tomt för idag, eller ett exakt datum
-- search_ids: ai-radiology,nph
-- mode: dry-run
-- limit: 5
+- from_date: 2018-01-01, eller annat avgränsat startdatum.
+- until_date: tomt för idag UTC, eller exakt slutdatum.
+- search_ids: ai-radiology,nph (en eller båda kan väljas).
+- mode: dry-run som standard; apply gör faktisk import.
+- limit: 5 för provurval, all för full genomgång av valt intervall.
+- max_imports: batchtak per kategori, fortfarande begränsat av återstående dygnstak 20.
+- confirm_library: rätt numeriskt bibliotek vid apply.
 
-Det visar verkliga totalantal men hämtar bara fem artiklar per sökning. Urvalet
-är trunkerat och sorteras enligt PubMeds publiceringsdatum; det är inte fem
-slumpmässiga representanter från hela perioden. Ingen historisk import görs.
-Resultat kan läsas från `backfill-status:backfill-status.json` och Actions Summary.
+CLI kan använda --from-date/--until-date, upprepade --search-id samt --per-category,
+--newest-first och --batch-imports. Nycklar ges bara via säker miljö. Rå CLI utan
+batchläge behåller sitt avbrottsskydd när urvalet inte ryms; inget läge får skapa
+fler nya än dagens återstående kategoritak.
 
-## Full genomgång och import
+## Kartläggning och rapportering
 
-Välj limit `all` för att hämta alla identifierare/metadata i intervallet. Om ett
-intervall har fler än 9999 träffar delas det automatiskt i två icke överlappande
-datumintervall, rekursivt vid behov. Dubbla PMID mellan delintervall slås ihop;
-ändrat totalantal stoppar körningen för att undvika tyst ofullständighet. Om ett
-enda datum fortfarande har över 9999 träffar krävs snävare söksträng.
+Read-only-körning 41464377138 gav **17977 AI-träffar** och **2008 NPH-träffar**
+på PDAT 2018-01-01–2026-11-02. Summan 19985 är före överlapp och befintliga poster.
+Fem provposter hämtades per sökning; inga importer gjordes i den kartläggningen.
 
-Efter granskad dry-run kan mode apply och explicit biblioteks-ID användas.
-`max_imports` är standard 20. Endast så många nya referenser importeras; övriga
-redovisas som uppskjutna. Befintliga PMID/DOI och manuella godkännanden respekteras.
-Retrospektivt urval har ett fast startdatum och tappar därför inte automatiskt
-2018-poster som en rullande 14-dagarskö gör.
+Daglig kandidatbearbetning räknar bara besökta år och granskade kandidater;
+deferred är överskott i hämtat urval, inte en ny exakt totalsiffra för hela
+historiken. unexamined_pmids avser ännu ej metadatahämtade ID:n i sökta år.
+Äldre ännu obesökta år återstår också. Med högt nytillflöde kan återfyllnaden gå
+långsamt; inget färdigdatum utlovas. Fast startår gör att äldre AI/NPH inte faller
+ur en 14-dagarskö. Historiken är klar först när hela perioden kontrollerats.
 
-En stor historisk sökning kan kräva många anrop och ta lång tid, även om bara
-20 nya importeras. Kör gärna år för år med fasta slutdatum. Detta är inte en
-schemalagd fullständig historisk kö: efterföljande manuella batchar eller en
-uttryckligt planerad historikkörning behövs för att arbeta av hela urvalet.
-Den dagliga tjugobatchen fortsätter separat. Vid tusentals historiska träffar
-bör antal, urval och batchstorlek beslutas innan bulkimport.
-
-CLI från repositoryroten:
-
-```bash
-uv run pubmed-zotero --live --zotero --from-date 2018-01-01 \
-  --search-id ai-radiology --search-id nph --limit 5
-```
-
-För en granskad importbatch används dessutom --apply, --confirm-library med rätt
-ID, --max-imports 20 och --batch-imports. Nycklar ges alltid via säker miljö.
-
-## Proveniens och begränsningar
-
-Nya proveniensanteckningar innehåller datumtyp och exakt sökintervall. Befintliga
-anteckningar skrivs inte över: en post hittad tidigare via samma query/version
-behåller sin första proveniens. Överlapp mellan bevakningar ger flera
-sökprovenienser på samma referens. Ingen PDF-hämtning eller evidensgradering görs.
-AI-strategins titelkrav prioriterar precision och kan missa arbeten som bara
-nämner AI/modalitet i abstract; det är ingen garanterat komplett systematisk sökning.
-
-## Observerad kartläggning 2026-11-02
-
-Read-only-körning 41464377138 gav 17977 AI-träffar och 2008 NPH-träffar på PDAT
-2018-01-01–2026-11-02. Summan 19985 är före överlapp och befintliga biblioteksposter.
-Fem provposter hämtades per sökning; inga importer gjordes i kartläggningen.
-
-Föreslagen första faktiska import är NPH, publiceringsår 2018, full sökning
-men högst 20 nya referenser. Den har inte startats och kräver uttryckligt godkännande. Det är inte samma sak som att hela
-NPH-historiken eller allt AI-material är färdigimporterat. Fler år/batchar kan
-köras med samma verktyg efter granskning av antal/urval och önskad kapacitet.
+Körresultat och dygnsräkning finns i automation-status/automation-status.json.
+Manuell historikkörning har separat backfill-status/backfill-status.json, men
+använder samma Zotero-baserade dygnsräkning. Inga nycklar eller privata notes publiceras.

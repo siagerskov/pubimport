@@ -14,9 +14,11 @@ och **NPH**. NPH gäller normaltryckshydrocefalus och är inte begränsad till r
 För fler bevakningar: använd Ny bevakning i verktyget, exportera YAML och inför
 filen enligt instruktionen nedan. En ny bevakning behöver ett unikt stabilt ID.
 
-Retrospektiv sökning från **2018-01-01** finns i Actions → Retrospective PubMed
-search. Standardvalet är AI och NPH, PDAT-publiceringsdatum och dry-run med fem
-provträffar per sökning. Ingen stor historisk import startas automatiskt.
+AI och NPH återfylls nu automatiskt från **2018-01-01**, nyast först enligt
+publiceringsdatum, med separata tak på **20 nya per kategori och svensk kalenderdag**.
+Artiklar som matchar båda skapas en gång men räknas mot båda kategoriernas tak.
+Actions → Retrospective PubMed search finns också för avgränsad manuell dry-run/import.
+Extra manuella körningar använder samma dygnsräkning.
 Se [retrospektiv import](docs/11-retrospektiv-import.md) för antal, full genomgång,
 årsvise batchar och skillnaden mot daglig EDAT-bevakning.
 
@@ -81,7 +83,7 @@ uv run pubmed-zotero --live --zotero --limit 2 --max-imports 4 \
 ```
 
 `--apply` kräver live-källor, matchande bibliotek och explicit skrivläge.
-Standardtaket är tjugo nya referenser. Saknas titel hoppas posten över och räknas
+Standardtaket är tjugo nya referenser per kategori och svensk kalenderdag. Saknas titel hoppas posten över och räknas
 som `metadata_missing`. Konflikter stoppar hela planeringen före första skrivning.
 Efter avbrott: kör ny dry-run. Det finns ingen automatisk återställning av redan
 skapade poster och inget kommando raderar eller slår ihop referenser.
@@ -113,8 +115,9 @@ artikel ur godkänd-samlingen återställer inte status automatiskt.
 
 GitHub Actions har manuella lägen `offline`, `dry-run` och `apply`, skyddat av
 importtak och concurrency. Överskjutande träffar redovisas och kan hämtas
-vid nästa körning inom det 14-dagars datumfönstret. Vid större kö krävs extra
-körningar eller justerad kapacitet för att undvika att äldre träffar faller ur fönstret. **Dagligt schema: 05:23 UTC, högst tjugo nya referenser totalt.** Se
+vid nästa körning. AI/NPH har fast historiskt startdatum 2018 och tappar därför
+inte äldre poster ur ett rullande fönster. MSK behåller 14-dagars EDAT och ett eget tak på 20.
+**Dagligt schema: 05:23 UTC, högst 20 nya per kategori och svensk kalenderdag.** Se
 [drift](docs/07-drift-underhall.md) för Secrets, miljöskydd och senare schema.
 
 ```bash

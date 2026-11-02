@@ -23,14 +23,14 @@ on:
         type: string
         default: 'all'
       max_imports:
-        description: 'Max nya referenser i batchen'
+        description: 'Batchtak per kategori, begränsas även av dagens återstående 20'
         type: string
         default: '20'
       confirm_library:
         description: 'Biblioteks-ID, krävs endast för godkänd apply'
         type: string
         default: ''
-# Daglig import godkänd 2026-11-02: 05:23 UTC, högst tjugo nya per körning.
+# Godkänt: 20 per kategori och dag; AI/NPH från 2018, nyast först.
 permissions:
   contents: read
 concurrency:
@@ -45,6 +45,7 @@ jobs:
       import_summary: ${{ steps.import_run.outputs.import_summary }}
       run_mode: ${{ steps.import_run.outputs.run_mode }}
       search_summary: ${{ steps.import_run.outputs.search_summary }}
+      daily_budget: ${{ steps.import_run.outputs.daily_budget }}
       tag_fix: ${{ steps.tag_fix.outputs.tag_fix }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -68,7 +69,8 @@ jobs:
       - name: Run selected mode
         id: import_run
         env:
-          SYNC_MODE: ${{ (github.event_name == 'schedule' || (github.event_name == 'push' && github.event.head_commit.message == 'Enable approved daily import and fix pilot tag 2026-11-02' && github.run_attempt == 1)) && 'apply' || inputs.mode || 'dry-run' }}
+          SYNC_MODE: ${{ inputs.mode || 'dry-run' }}
+          APPROVED_DAILY_HISTORY: ${{ (github.event_name == 'schedule' || (github.event_name == 'push' && github.event.head_commit.message == 'Start approved newest-first per-category history import' && github.run_attempt == 1)) && 'ai-nph-2018-newest-20-per-category' || '' }}
           SYNC_LIMIT: ${{ inputs.limit || 'all' }}
           SYNC_BATCH: 'true'
           MAX_IMPORTS: ${{ inputs.max_imports || '20' }}
@@ -78,7 +80,12 @@ jobs:
           ZOTERO_LIBRARY_TYPE: ${{ vars.ZOTERO_LIBRARY_TYPE || 'user' }}
           NCBI_EMAIL: ${{ vars.NCBI_EMAIL }}
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
-        run: uv run python scripts/run_sync.py
+        run: |
+          if [ "$APPROVED_DAILY_HISTORY" = "ai-nph-2018-newest-20-per-category" ]; then
+            uv run python scripts/run_daily.py
+          else
+            uv run python scripts/run_sync.py
+          fi
 
   publish-status:
     needs: sync
@@ -96,6 +103,7 @@ jobs:
           SYNC_RESULT: ${{ needs.sync.result }}
           RUN_MODE: ${{ needs.sync.outputs.run_mode }}
           SEARCH_SUMMARY: ${{ needs.sync.outputs.search_summary }}
+          DAILY_BUDGET: ${{ needs.sync.outputs.daily_budget }}
           IMPORT_SUMMARY: ${{ needs.sync.outputs.import_summary }}
           TAG_FIX_RESULT: ${{ needs.sync.outputs.tag_fix }}
         run: python scripts/publish_status.py

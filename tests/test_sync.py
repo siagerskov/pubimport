@@ -1,5 +1,6 @@
 from copy import deepcopy
 from dataclasses import replace
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -34,7 +35,14 @@ class Library:
             raise ZoteroError("simulated timeout")
         self.version += 1
         key = f"{self.version:08d}"
-        record = {"key": key, "data": {**deepcopy(data), "key": key}}
+        record = {
+            "key": key,
+            "data": {
+                **deepcopy(data),
+                "key": key,
+                "dateAdded": datetime.now(UTC).isoformat(),
+            },
+        }
         (self.collections if kind == "collections" else self.items).append(record)
         return deepcopy(record)
 

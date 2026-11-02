@@ -99,6 +99,8 @@ def run():
             "reviews_completed",
             "total_hits",
             "unique_pmids",
+            "unexamined_pmids",
+            "known_skipped",
             "searches",
         }
         and type(v) is int
@@ -114,6 +116,13 @@ def run():
         "tag_fix": os.environ.get("TAG_FIX_RESULT", ""),
         "commit": os.environ.get("GITHUB_SHA", ""),
     }
+    budget = json.loads(os.environ.get("DAILY_BUDGET") or "{}")
+    if budget:
+        status["daily_budget"] = {
+            k: budget[k]
+            for k in ("date", "timezone", "cap_per_category", "used", "remaining")
+            if k in budget
+        }
     search_stats = json.loads(os.environ.get("SEARCH_SUMMARY") or "[]")
     status["searches"] = [
         {

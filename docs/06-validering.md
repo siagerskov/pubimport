@@ -2,15 +2,15 @@
 
 ## Aktuell verifieringsstatus 2026-11-02
 
-- 128 Python-tester och nio JavaScript-tester passerar, utan överhoppade eller
+- 139 Python-tester och nio JavaScript-tester passerar, utan överhoppade eller
   förväntade fel. Lint och formattering är godkända.
-- Daglig import är godkänd och konfigurerad 05:23 UTC med tak **20**.
+- Daglig import är godkänd och konfigurerad 05:23 UTC med tak **20 per kategori/dag**.
   Startkörning observerad; första senare schematrigger är ännu inte dokumenterad.
 - Timvis samlingsstyrt godkännande är godkänt och dess första livekontroll lyckades.
 - NPH är tillagd separat utan radiologi-/AI-filter. AI och MSK är egna bevakningar.
 - Retrospektiv PDAT-kartläggning från 2018 är verkligt verifierad utan skrivning.
-- En första avgränsad NPH-återfyllnad för 2018, högst 20 nya, är ett förslag;
-  ingen historisk import har utförts. Uttryckligt batchgodkännande återstår.
+- AI och NPH från 2018, nyast först och 20 per kategori/dag, är uttryckligen
+  godkänt. Första körningen av den nya återfyllnaden inväntar publicerad status.
 
 ## Verklig retrospektiv kartläggning
 
@@ -92,3 +92,18 @@ Automatisk godkännandegranskning stoppade pushen som skulle starta faktisk
 omfattade den specifika tjugopostsbatchens externa skrivning. Engångsstarten
 har därför tagits bort; dokumentation och read-only-funktioner publiceras separat.
 Ingen ny historisk referens har importerats av detta arbete.
+
+## Godkänd drift: nyast först, 20 per kategori/dag
+
+Användaren godkände faktisk historisk import för både AI och NPH från 2018 och
+förtydligade därefter 20 per kategori/dag. Detta ersätter det tidigare förslaget
+om enbart NPH år 2018 och det tidigare gemensamma taket. Nyast först gäller båda.
+138 Python-tester och nio JavaScript-tester passerar före driftsättning.
+Nya tester täcker svensk kalenderdag, oberoende tak, papperskorg, legacy-proveniens,
+överlapp som belastar båda, noll kvar i en kategori, nyast först, framflyttning
+till äldre år, begränsad metadatahämtning och upprepad faktisk runner med noll
+nya importer efter uppnådda kategoritak. Liveutfall från nya driftstarten återstår.
+
+Legacy-räkningen verifierar också att senare tillagda provenienser inte flyttar
+ursprungskategori för en referens som skapats tidigare under dagen. Totalt 139
+Python-tester och nio JavaScript-tester passerar inför starten.
