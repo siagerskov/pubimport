@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from pubmed_zotero.reviews import review_plan
-from pubmed_zotero.sync import apply_plan
+from pubmed_zotero.sync import ApplyError, apply_plan
 from pubmed_zotero.zotero import ZoteroClient
 
 
@@ -21,7 +21,11 @@ def run():
         allow_writes=args.apply,
     )
     plan = review_plan(client.snapshot())
-    result = apply_plan(plan, client) if args.apply else plan
+    try:
+        result = apply_plan(plan, client) if args.apply else plan
+    except ApplyError as exc:
+        print(json.dumps(exc.summary, ensure_ascii=False))
+        raise
     # A fresh read must no longer propose updates after a successful apply.
     if args.apply and review_plan(client.snapshot())["actions"]:
         raise RuntimeError("Godkännandestatus behöver kontrolleras efter skrivning.")

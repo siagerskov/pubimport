@@ -181,9 +181,9 @@ def plan_sync(discovery, searches, snapshot: Snapshot):
 
 
 class ApplyError(ZoteroError):
-    def __init__(self, summary):
+    def __init__(self, summary, reason=""):
         super().__init__(
-            "Synkningen avbröts. Vissa steg kan vara klara; kör ny dry-run."
+            "Synkningen avbröts. Vissa steg kan vara klara; kör ny dry-run. " + reason
         )
         self.summary = summary
 
@@ -224,9 +224,9 @@ def apply_plan(plan, client):
                 if action["action"] == "create_item":
                     summary["imported"] += 1
             summary["completed_actions"] += 1
-    except ZoteroError:
+    except ZoteroError as exc:
         summary["errors"] = 1
-        raise ApplyError(summary) from None
+        raise ApplyError(summary, str(exc)) from None
     return {"mode": "apply", "summary": summary}
 
 

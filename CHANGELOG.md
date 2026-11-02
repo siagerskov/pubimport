@@ -2,6 +2,8 @@
 
 ## 2026-11-02
 
+- Avbrutna godkännandekörningar rapporterar säkra felmeddelanden och genomförda steg.
+
 - Godkända appreferenser sorteras i ämnessamlingar för MSK, AI och NPH.
   Importkategorier och proveniens ger stöd även för tidigare godkända poster;
   överlapp, manuella samlingar och konfliktskydd bevaras.
