@@ -25,12 +25,12 @@ on:
       max_imports:
         description: 'Max nya referenser i batchen'
         type: string
-        default: '10'
+        default: '20'
       confirm_library:
         description: 'Biblioteks-ID, krävs endast för godkänd apply'
         type: string
         default: ''
-# Daglig import godkänd 2026-11-02: 05:23 UTC, högst tio nya per körning.
+# Daglig import godkänd 2026-11-02: 05:23 UTC, högst tjugo nya per körning.
 permissions:
   contents: read
 concurrency:
@@ -70,7 +70,7 @@ jobs:
           SYNC_MODE: ${{ (github.event_name == 'schedule' || (github.event_name == 'push' && github.event.head_commit.message == 'Enable approved daily import and fix pilot tag 2026-11-02' && github.run_attempt == 1)) && 'apply' || inputs.mode || 'dry-run' }}
           SYNC_LIMIT: ${{ inputs.limit || 'all' }}
           SYNC_BATCH: 'true'
-          MAX_IMPORTS: ${{ inputs.max_imports || '10' }}
+          MAX_IMPORTS: ${{ inputs.max_imports || '20' }}
           CONFIRM_LIBRARY: ${{ (github.event_name == 'schedule' || github.event_name == 'push') && vars.ZOTERO_LIBRARY_ID || inputs.confirm_library }}
           ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
           ZOTERO_LIBRARY_ID: ${{ vars.ZOTERO_LIBRARY_ID }}

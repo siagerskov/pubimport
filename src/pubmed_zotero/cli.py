@@ -55,7 +55,7 @@ def main(argv=None) -> int:
     )
     parser.add_argument("--confirm-library", help="Bekräfta mål-ID vid apply.")
     parser.add_argument(
-        "--max-imports", type=int, default=10, help="Importtak, standard 10."
+        "--max-imports", type=int, default=20, help="Importtak, standard 20."
     )
     parser.add_argument(
         "--batch-imports",

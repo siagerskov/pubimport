@@ -32,13 +32,13 @@ def run():
                 "--confirm-library",
                 os.environ.get("CONFIRM_LIBRARY", ""),
                 "--max-imports",
-                os.environ.get("MAX_IMPORTS", "10"),
+                os.environ.get("MAX_IMPORTS", "20"),
             ]
         if os.environ.get("SYNC_BATCH") == "true":
             args += [
                 "--batch-imports",
                 "--max-imports",
-                os.environ.get("MAX_IMPORTS", "10"),
+                os.environ.get("MAX_IMPORTS", "20"),
             ]
     else:
         print("Okänt synkläge.", file=sys.stderr)

@@ -68,7 +68,7 @@ uv run pubmed-zotero --live --zotero --limit 2 --max-imports 4 \
 ```
 
 `--apply` kräver live-källor, matchande bibliotek och explicit skrivläge.
-Standardtaket är tio nya referenser. Saknas titel hoppas posten över och räknas
+Standardtaket är tjugo nya referenser. Saknas titel hoppas posten över och räknas
 som `metadata_missing`. Konflikter stoppar hela planeringen före första skrivning.
 Efter avbrott: kör ny dry-run. Det finns ingen automatisk återställning av redan
 skapade poster och inget kommando raderar eller slår ihop referenser.
@@ -88,7 +88,7 @@ appskapade poster, en per sökning/version/query.
 GitHub Actions har manuella lägen `offline`, `dry-run` och `apply`, skyddat av
 importtak och concurrency. Överskjutande träffar redovisas och kan hämtas
 vid nästa körning inom det 14-dagars datumfönstret. Vid större kö krävs extra
-körningar eller justerad kapacitet för att undvika att äldre träffar faller ur fönstret. **Dagligt schema: 05:23 UTC, högst tio nya referenser totalt.** Se
+körningar eller justerad kapacitet för att undvika att äldre träffar faller ur fönstret. **Dagligt schema: 05:23 UTC, högst tjugo nya referenser totalt.** Se
 [drift](docs/07-drift-underhall.md) för Secrets, miljöskydd och senare schema.
 
 ```bash

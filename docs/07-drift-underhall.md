@@ -8,7 +8,7 @@ svensk vintertid och 07:23 sommartid. GitHub kan fördröja schemalagda körning
 ingen exakt leveranstid garanteras.
 
 Varje schemalagd körning hämtar hela det konfigurerade 14-dagars EDAT-fönstret,
-läser Zotero inklusive anteckningar och papperskorg och importerar **högst tio
+läser Zotero inklusive anteckningar och papperskorg och importerar **högst tjugo
 nya referenser totalt**. Tillgängliga platser fördelas växelvis mellan sökningarna.
 Nya referenser får status/ej-granskad och rätt ämnessamling under inkorgen.
 Befintliga metadata och manuella statusar ändras inte.
@@ -16,7 +16,7 @@ Befintliga metadata och manuella statusar ändras inte.
 Hela urvalets identifierarkonflikter kontrolleras innan en delmängd väljs.
 Överskjutande nya referenser redovisas som `deferred`/Uppskjutna av importtak.
 De kan komma med vid senare körningar så länge de ligger kvar i EDAT-fönstret.
-**Det finns ingen beständig kö:** om inflödet överstiger tio per dag, eller ett
+**Det finns ingen beständig kö:** om inflödet överstiger tjugo per dag, eller ett
 långt driftavbrott inträffar, kan äldre ej importerade träffar falla ur fönstret.
 Granska uppskjutna antal; kör fler manuella batchar eller ändra tak/fönster vid
 behov. Appen hävdar inte fullständig litteraturbevakning under en växande kö.
@@ -47,9 +47,9 @@ Actions → PubMed to Zotero → Run workflow:
 - `dry-run`: läser API:erna, skriver bara plan; säkert standardval.
 - `apply`: import till explicit bekräftat bibliotek. Sätt confirm_library till
   rätt numeriskt ID. Limit `all` söker hela fönstret; positiv siffra begränsar
-  antal hämtade per sökning. max_imports styr batchens globala tak, standard tio.
+  antal hämtade per sökning. max_imports styr batchens globala tak, standard tjugo.
 
-För extra ikappkörning: välj apply, limit all, max_imports 10 och bekräftat ID.
+För extra ikappkörning: välj apply, limit all, max_imports 20 och bekräftat ID.
 Inga redan kända referenser ska skapas igen. Normal CLI utan --batch-imports
 behåller tidigare skydd: överskridet --max-imports avbryter hela planen.
 

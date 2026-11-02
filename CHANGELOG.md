@@ -2,6 +2,9 @@
 
 ## 2026-11-02
 
+- På användarens begäran höjt dagligt importtak och standardbatch från 10 till 20
+  nya referenser. Tidpunkten 05:23 UTC och datumfönstret är oförändrade.
+
 - Verifierad startkörning 41454865904: taggrättning bekräftad, tio nya referenser
   importerade, fyra kända, noll fel. Maskinläsbar status kunde läsas direkt via Git.
 - 427 träffar uppskjutna; tiotakets kapacitetsbegränsning dokumenterad.
