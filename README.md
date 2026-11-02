@@ -2,7 +2,8 @@
 
 Automatisk litteraturbevakning för MSK-radiologi och AI inom radiologi med en
 Zotero-inkorg för manuell granskning. **Version 0.2 implementerar synkningen och
-manuell körning; verklig API-validering och godkänd pilot återstår.**
+manuell körning. En fyrpostspilot och tom omkörningsplan är verifierade;
+manuell kvalitetskontroll och godkännande av daglig drift återstår.**
 
 ## Eget sökverktyg
 

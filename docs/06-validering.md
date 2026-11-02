@@ -1,75 +1,74 @@
-# Ändringslogg
+# Validering
 
-## 2026-11-02
+## Aktuellt utfall – 2026-11-02
 
-- Användarens pilotlogg bekräftar fyra importerade referenser, men omkörningsplanen
-  var inte tom. Fortsatt skrivning hålls avstängd under felsökningen.
-- Separat read-only pilotdiagnos för exakt de fyra importerade PMID:erna:
-  antal kända poster, återstående åtgärdstyper och igenkänd proveniens, utan att
-  skriva ut övriga biblioteksanteckningar eller göra någon reparation.
+Användarens read-only Actions-resultat från körning **41445005452** bekräftar:
 
-- Användaren godkände pilot med högst fyra nya referenser. Engångsworkflow
-  för exakt godkänd push, utan möjlighet till automatisk import via re-run.
-- Pilot hämtar högst två träffar per sökning, fryser urvalet och verifierar
-  efter import att en ny plan för samma urval inte kräver fler åtgärder.
+- Fyra kända pilotreferenser, noll nya och noll saknade titlar.
+- Noll återstående åtgärder, noll importer och noll fel i diagnosen.
+- Exakt en synlig barnanteckning med rätt proveniensmarkör per pilotreferens.
+- Nyckelrättigheter: library=true, notes=true, write=true.
 
-- Infört användarens exakta MSK-query som version 4; fluoroskopi och tomosyntes
-  borttagna ur den sökningen. AI kvar på version 3. Sökverktygets grundförslag uppdaterade.
+PMID: 42960128, 42959815, 42959533 och 42936410.
+Den nya planen för piloturvalet är tom efter behörighetsändringen. Ingen
+reparation, extra referens eller anteckning behövde skapas. Detta verifierar
+omkörningsplanens idempotens för just dessa fyra poster, inte alla framtida fall.
+Dagligt schema är fortsatt avstängt. Manuell kontroll i Zotero av metadata,
+samlingar och status återstår, liksom separat godkännande av automatisk drift.
 
-- Fristående sökverktyg i `web/search-builder.html`: egna termer, OR/AND/NOT,
-  val av titel/titel-abstract/alla fält, query-förhandsvisning och PubMed-länk.
-- Export till validerbar searches.yaml, automatisk versionshöjning från medföljande
-  query och valfritt lokalt utkast. Inga API-nycklar eller externa skrivningar.
-- Sju JavaScript-tester och automatiserad browserkontroll tillagda.
+## Tidigare verkliga körningar
 
-- Version 2 gav fortfarande irrelevanta provträffar. Sökförslag version 3
-  kräver radiologisk modalitet i titel och prioriterar precision före recall.
-- Actions visar nu en kort, HTML-escapad sammanfattning med artikelrubriker,
-  sökversioner, antal och trunkering direkt på körningens översiktssida.
+- **41438100545**, sökversion 1: 319 sökträffar totalt (kan överlappa), nio
+  unika hämtade PMID vid högst fem per sökning, nio nya, noll metadatafel/importer.
+  Irrelevanta provtitlar motiverade fortsatt sökarbete.
+- **41438795739**, version 2: 1524 träffar totalt, tio unika hämtade poster,
+  tio nya, noll metadatafel/importer. Fortfarande irrelevanta titlar. Version 3
+  prioriterade tydligare modaliteter i titel; användarens exakta MSK-query blev v4.
+- Användarens dry-run för MSK v4/AI v3: 469 träffar totalt, nio unika hämtade,
+  nio nya, noll metadatafel/importer. Det trunkerade provurvalet var mer relevant;
+  PET/CT-lymfomträffen i MSK visar att sökprecision fortfarande kräver granskning.
+- **41443477199**, godkänd fyrpostspilot: fyra referenser importerades, men
+  omkörningsplanen var inte tom. Ingen andra skrivomgång genomfördes.
+- **41444085669**: alla fyra poster hittades, men deras barnanteckningar var
+  osynliga; planen föreslog fyra notes och inga nya referenser. Ingen reparation
+  gjordes. Efter användarens ändring av notes-behörighet visar **41445005452**
+  att anteckningarna redan fanns och att inga ytterligare åtgärder behövs.
 
-- Verklig dry-run verifierad via användarens Actions-logg: nio unika poster,
-  noll importer och inga metadatafel i det begränsade urvalet.
-- Sökförslag version 2 kräver tydligare radiologiska modaliteter efter
-  irrelevanta spektroskopi-/fluorescensträffar i version 1; klinisk granskning återstår.
+Node/Ubuntu-varningarna i Actions är separata från det tidigare kontrollfelet.
+GitHub API är inte åtkomligt från utvecklingsmiljön; verkliga utfall ovan bygger
+på användarens delade Actions-loggar och sammanfattningar.
 
-- Appkoden pushad till GitHub. Dry-run startas automatiskt vid appändringar
-  på main; apply kräver fortsatt manuell trigger och biblioteksbekräftelse.
+## Lokala kontroller
 
-## 0.2.0 – 2026-11-01
+```bash
+uv sync --frozen
+uv run ruff format --check .
+uv run ruff check .
+uv run pytest
+node web/search-builder.test.cjs
+uv build
+```
 
-- Etapp 2: Zotero API-v3-klient, konsistent paginerad snapshot, samlingsplanering,
-  bibliografisk mappning och offline/live dry-run.
-- Etapp 3: PMID/DOI-matchning, konfliktstopp, proveniensanteckningar,
-  explicit apply med importtak och versionsskydd, säker omkörning efter partiella fel.
-- Manuella statusar, metadata, personliga notes och papperskorgsval bevaras.
-- Etapp 4: manuellt Actions-flöde med offline/dry-run/apply, concurrency
-  och körinstruktioner; dagligt schema förblir avstängt.
-- Mockade integrations- och återhämtningsprov; ingen verklig import genomförd.
+Senaste kodkontrollen: **103 Python-tester passerar**, inga överhoppade eller
+förväntade fel. Lint/format godkända. Sju JavaScript-tester för sökverktyget har
+passerat. Källpaket/wheel och ren installation/CLI verifierades för version 0.2.
+Alla standardtester använder syntetiska data och simulerade API:er, inga nycklar.
 
-## 0.1.0 – 2026-11-01
+Täckning: metadatafall, saknade fält, ESearch-paginering, EFetch-batchar,
+fullständighet, nätfel/429/5xx, sanerade fel, XML-säkerhet, UTC-datum, query-version,
+PMID/DOI-konflikter, överlapp, samlingsmedlemskap, proveniens, manuella taggar/titlar/
+notes, papperskorg, partiellt importfel, förlorat skrivsvar, versionsskydd,
+importtak, fixture-spärr, fryst piloturval och kontroll av library/notes/write.
 
-### Etapp 0 – Projektbootstrap
-- Pythonpaket, CLI, versionslåsta beroenden och CI för offline-kontroller.
-- Projektregler, installationsanvisningar, dokumentation och etappplan.
+Chromiumkontroll av sökverktyget via tillfällig lokal HTTP-server verifierade
+termgrupper, fältval, förhandsvisning, utkast efter omladdning, YAML-nedladdning,
+ny bevakning och mobilbredd. Den faktiskt nedladdade filen godkändes av appens
+konfigurationsläsare. PubMed-provlänkens query och datum kontrolleras separat av
+JavaScript-test, inte genom klinisk relevanssimulering.
 
-### Etapp 1 – PubMed-läsning
-- Två versionshanterade sökförslag med överlappande EDAT-datumfönster.
-- ESearch/EFetch med paginering, batchar, timeout, hastighetsbegränsning,
-  sanerade fel och begränsade återförsök, inklusive Retry-After.
-- Normalisering av PMID, DOI, titel, författare, datum, tidskrift och abstract.
-- JSON-rapport med proveniens och sammanslagning av överlappande PMID inom körningen.
-- Syntetiskt offline-läge och mockade integrationstester. Ingen Zotero-skrivning.
+## Återstår före färdig drift
 
-## Pilotdiagnos 41444085669 – 2026-11-02
-
-Fyra referenser känns igen som appskapade; alla har noll synliga child notes.
-Planen innehåller enbart fyra create_note och inga nya referenser. Detta
-bevisar inte att anteckningarna saknas: en nyckel utan Allow notes access kan
-göra dem osynliga. Kontroll av keys/current tillagd och synkning spärras utan
-full notes-läsning. En ny read-only-diagnos ska bekräfta de faktiska rättigheterna
-innan någon reparation övervägs.
-
-Användaren meddelade därefter att anteckningsbehörighet lagts till i Zotero.
-En ny read-only-kontroll har begärts för att verifiera att Actions-nyckeln har
-rättigheten och kan läsa redan skapade proveniensanteckningar. Ingen ny
-import eller reparation ingår; utfallet är ännu inte observerat.
+1. Användarens manuella kontroll av de fyra importerade posterna i Zotero.
+2. Klinisk granskning av sökstrategier och beslut om önskad precision/recall.
+3. Separat godkännande för dagligt schema, valt importtak och driftövervakning.
+4. Observerad lyckad körning av det godkända schemat; ingen sådan körning finns ännu.

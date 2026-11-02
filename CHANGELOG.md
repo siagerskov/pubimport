@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+- Efter ändrad notes-behörighet verifierar verklig read-only-diagnos 41445005452
+  fyra kända pilotposter, rätt befintlig proveniens och noll återstående åtgärder.
+  Ingen reparation eller dubbelimport behövdes. Manuell kvalitetskontroll återstår.
+- Valideringsdokumentet rättat och sammanställt med observerade utfall.
+
 - Pilotdiagnos: fyra kända referenser men inga synliga barnanteckningar;
   återstående plan omfattar fyra notes, inga nya referenser.
 - Infört kontroll av library/notes/write-permission via keys/current innan
