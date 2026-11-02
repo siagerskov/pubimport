@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+- Användaren godkände pilot med högst fyra nya referenser. Engångsworkflow
+  för exakt godkänd push, utan möjlighet till automatisk import via re-run.
+- Pilot hämtar högst två träffar per sökning, fryser urvalet och verifierar
+  efter import att en ny plan för samma urval inte kräver fler åtgärder.
+
 - Infört användarens exakta MSK-query som version 4; fluoroskopi och tomosyntes
   borttagna ur den sökningen. AI kvar på version 3. Sökverktygets grundförslag uppdaterade.
 
