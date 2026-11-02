@@ -2,6 +2,10 @@
 
 ## 2026-11-02
 
+- Kategoritak verifierade i verklig körning 41471950206: 46 nya referenser
+  importerade utan fel, med dagens sluträkning AI 20, NPH 20 och MSK 20.
+  Tidigare importer räknades med; återstående kvot noll i varje kategori.
+
 - Användaren godkände historisk import för AI och NPH från 2018, nyast först,
   och förtydligade **20 nya per kategori och svensk kalenderdag**, inte gemensamt.
 - Ursprunglig importkategori sparas på nya poster. Samma dygnsräkning gäller

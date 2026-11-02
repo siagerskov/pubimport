@@ -33,3 +33,7 @@ Daglig körning arbetar sig bakåt från senaste året och delar kvoter med manu
 
 Faktiska testantal och kör-ID:n finns i 06-validering.md. Historiska formuleringar
 i CHANGELOG/ADR ska läsas som historik; denna fil och driftguiden beskriver aktuell status.
+
+Starten av kategorivis återfyllnad är verifierad i 41471950206: 46 nya utan fel,
+slutlig förbrukning 20/20 per kategori efter att tidigare importer räknats med.
+Återfyllnaden fortsätter automatiskt vid nya kalenderdagars utrymme, nyast först.

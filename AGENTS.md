@@ -14,3 +14,7 @@
 - Godkännandesynk är uttryckligen godkänd: för appskapade poster signalerar
   medlemskap i godkänd-samlingen status/godkand och borttagning ur inkorgsträdet.
   Bevara egna taggar/metadata och rapportera avvakta/exkluderad-konflikter.
+
+- Importtak: 20 nya per kategori och svensk kalenderdag, även över flera jobb.
+  AI och NPH återfylls från 2018, nyast först. Överlapp belastar båda kategorier.
+  Kontrollera sparade ursprungsdatum/kategorier; nollställ inte kvot vid omkörning.

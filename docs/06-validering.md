@@ -10,7 +10,7 @@
 - NPH är tillagd separat utan radiologi-/AI-filter. AI och MSK är egna bevakningar.
 - Retrospektiv PDAT-kartläggning från 2018 är verkligt verifierad utan skrivning.
 - AI och NPH från 2018, nyast först och 20 per kategori/dag, är uttryckligen
-  godkänt. Första körningen av den nya återfyllnaden inväntar publicerad status.
+  godkänt. Den nya återfyllnadens startkörning är verifierad via publicerad status.
 
 ## Verklig retrospektiv kartläggning
 
@@ -107,3 +107,24 @@ nya importer efter uppnådda kategoritak. Liveutfall från nya driftstarten åte
 Legacy-räkningen verifierar också att senare tillagda provenienser inte flyttar
 ursprungskategori för en referens som skapats tidigare under dagen. Totalt 139
 Python-tester och nio JavaScript-tester passerar inför starten.
+
+## Verifierad start med kategorivisa dygnstak
+
+Actions **41471950206**, commit 223ba7ded6e8295c76a2f85f82531306fdd8c037,
+rapporterade success/apply 2026-11-02. Resultatet lästes direkt från automation-status.
+46 nya referenser importerades, 14 tidigare poster kändes igen, noll fel och
+93/93 plansteg slutfördes. Dagens återlästa kvoter i Europe/Stockholm var:
+
+| Kategori | Importerade under kalenderdagen | Återstående |
+|---|---:|---:|
+| MSK | 20 | 0 |
+| AI | 20 | 0 |
+| NPH | 20 | 0 |
+
+AI/NPH-kandidatfönstren började med 2026-01-01–2026-11-02 på PDAT; nyare material
+fyllde kvoterna, så tidigare år behövde inte besökas i denna körning. Det är
+avsiktligt nyast-först, inte ett påstående att 2018 redan är genomgånget.
+Endast 92 kandidatmetadata hämtades trots 4206 träffar i de besökta fönstren.
+Rapportens 46 deferred avser urvalet, inte hela återstående historiken.
+Nästa kalenderdag ger nytt utrymme. Första faktiska schedule-triggern är
+separat från denna lyckade startpush och återstår att observera.
