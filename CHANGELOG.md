@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+- Verklig dry-run verifierad via användarens Actions-logg: nio unika poster,
+  noll importer och inga metadatafel i det begränsade urvalet.
+- Sökförslag version 2 kräver tydligare radiologiska modaliteter efter
+  irrelevanta spektroskopi-/fluorescensträffar i version 1; klinisk granskning återstår.
+
 - Appkoden pushad till GitHub. Dry-run startas automatiskt vid appändringar
   på main; apply kräver fortsatt manuell trigger och biblioteksbekräftelse.
 

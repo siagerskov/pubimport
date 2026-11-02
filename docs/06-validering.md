@@ -16,7 +16,13 @@
   versionskonflikt, read-retries, sanerade autentiseringsfel, inga blinda write-retries,
   bibliotekskonfirmation, importtak och förbud mot fixture-import.
 
-**Återstår:** verklig läsning från båda API:erna, riktig dry-run, pilot med
+**Uppdatering 2026-11-02:** användarens logg från Actions 41438100545
+verifierar verklig PubMed/Zotero-läsning och dry-run för sökversion 1:
+319 sökträffar totalt (inklusive överlapp), nio unika hämtade PMID vid cap 5
+per sökning, nio nya, noll kända, noll metadatafel, 24 plansteg och noll importer.
+Irrelevanta titlar motiverar sökversion 2; dess relevans är ännu inte verifierad.
+
+**Återstår:** ny dry-run för version 2, pilot med
 manuell bibliografisk kontroll, omkörning i Zotero och observerad Actions-körning.
 Zotero-nyckel och biblioteks-ID är inte konfigurerade i miljön; API-domänerna
 behöver tillåtas. Ingen verklig Zotero-skrivning, push eller publicering har gjorts.

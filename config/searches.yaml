@@ -1,21 +1,25 @@
 searches:
-  - id: msk-radiology
-    title: MSK-radiologi
-    enabled: true
-    version: '1'
-    lookback_days: 14
-    description: Förslag för klinisk granskning; MSK och bilddiagnostik, utan tidskriftsfilter.
-    query: >-
-      ("Musculoskeletal Diseases"[MeSH Terms] OR musculoskeletal[Title/Abstract])
-      AND ("Diagnostic Imaging"[MeSH Terms] OR radiology[Title/Abstract])
-  - id: ai-radiology
-    title: AI inom radiologi
-    enabled: true
-    version: '1'
-    lookback_days: 14
-    description: Förslag för klinisk granskning; AI och radiologi, utan evidensgradering.
-    query: >-
-      ("Artificial Intelligence"[MeSH Terms] OR "machine learning"[Title/Abstract]
-      OR "deep learning"[Title/Abstract])
-      AND ("Radiology"[MeSH Terms] OR radiology[Title/Abstract]
-      OR "Diagnostic Imaging"[MeSH Terms])
+- id: msk-radiology
+  title: MSK-radiologi
+  enabled: true
+  version: '2'
+  lookback_days: 14
+  description: Förslag version 2 för klinisk granskning; explicit radiologisk modalitet, utan tidskriftsfilter.
+  query: ("Musculoskeletal Diseases"[MeSH Terms] OR "Musculoskeletal System"[MeSH Terms] OR musculoskeletal[Title/Abstract]
+    OR bone[Title/Abstract] OR joint[Title/Abstract] OR tendon*[Title/Abstract] OR ligament*[Title/Abstract] OR
+    cartilage[Title/Abstract] OR menisc*[Title/Abstract] OR spine[Title/Abstract]) AND ("Radiology"[MeSH Terms:noexp]
+    OR radiolog*[Title/Abstract] OR "Magnetic Resonance Imaging"[MeSH Terms] OR "Tomography, X-Ray Computed"[MeSH
+    Terms] OR "Radiography"[MeSH Terms:noexp] OR "Ultrasonography"[MeSH Terms:noexp] OR MRI[Title/Abstract] OR "magnetic
+    resonance"[Title/Abstract] OR "computed tomography"[Title/Abstract] OR radiograph*[Title/Abstract] OR ultrasound[Title/Abstract]
+    OR ultrasonograph*[Title/Abstract])
+- id: ai-radiology
+  title: AI inom radiologi
+  enabled: true
+  version: '2'
+  lookback_days: 14
+  description: Förslag version 2 för klinisk granskning; explicit radiologisk modalitet, utan tidskriftsfilter.
+  query: ("Artificial Intelligence"[MeSH Terms] OR "machine learning"[Title/Abstract] OR "deep learning"[Title/Abstract]
+    OR "artificial intelligence"[Title/Abstract]) AND ("Radiology"[MeSH Terms:noexp] OR radiolog*[Title/Abstract]
+    OR "Magnetic Resonance Imaging"[MeSH Terms] OR "Tomography, X-Ray Computed"[MeSH Terms] OR "Radiography"[MeSH
+    Terms:noexp] OR "Ultrasonography"[MeSH Terms:noexp] OR MRI[Title/Abstract] OR "magnetic resonance"[Title/Abstract]
+    OR "computed tomography"[Title/Abstract] OR radiograph*[Title/Abstract] OR ultrasound[Title/Abstract] OR ultrasonograph*[Title/Abstract])
