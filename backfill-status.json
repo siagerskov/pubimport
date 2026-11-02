@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-11-02T14:42:09.074906+00:00",
-  "run_id": "41464377138",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41464377138",
+  "observed_at": "2026-11-02T15:29:01.441026+00:00",
+  "run_id": "41471950187",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41471950187",
   "result": "success",
   "event": "push",
   "mode": "dry-run",
@@ -20,7 +20,20 @@
     "deferred": 0
   },
   "tag_fix": "",
-  "commit": "47bf06d009669d18fa1a1d5c00a788b2846ee89c",
+  "commit": "223ba7ded6e8295c76a2f85f82531306fdd8c037",
+  "daily_budget": {
+    "date": "2026-11-02",
+    "timezone": "Europe/Stockholm",
+    "cap_per_category": 20,
+    "used": {
+      "ai-radiology": 7,
+      "nph": 0
+    },
+    "remaining": {
+      "ai-radiology": 13,
+      "nph": 20
+    }
+  },
   "searches": [
     {
       "search_id": "ai-radiology",
