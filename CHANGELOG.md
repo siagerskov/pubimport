@@ -1,5 +1,10 @@
 # Ändringslogg
 
+## 2026-11-02
+
+- Appkoden pushad till GitHub. Dry-run startas automatiskt vid appändringar
+  på main; apply kräver fortsatt manuell trigger och biblioteksbekräftelse.
+
 ## 0.2.0 – 2026-11-01
 
 - Etapp 2: Zotero API-v3-klient, konsistent paginerad snapshot, samlingsplanering,

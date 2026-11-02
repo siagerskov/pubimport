@@ -1,5 +1,14 @@
 name: PubMed to Zotero
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'config/**'
+      - 'scripts/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/pubmed-sync.yml'
   workflow_dispatch:
     inputs:
       mode:

@@ -3,7 +3,8 @@
 ## Manuell GitHub Actions-körning
 
 `tests.yml` kör offline-kontroller på push/PR och manuellt. `pubmed-sync.yml`
-har enbart `workflow_dispatch`, inget aktivt schema.
+kör dry-run automatiskt vid appändringar på main och kan startas manuellt.
+Inget aktivt schema finns. Push kan aldrig välja apply; det kräver manuell trigger.
 
 1. Granska och pusha koden till det valda GitHub-repositoryt.
 2. Skapa environment `zotero-production` under Settings → Environments.
