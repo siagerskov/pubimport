@@ -1,4 +1,7 @@
-# Arkitekturbeslut
+# Arkitekturbeslut – historik
+
+Äldre beslut beskriver sitt datum. Aktuell policy finns i 02-teknisk-specifikation.md;
+statusundantaget nedan ersätter den tidigare absoluta regeln om orörda statusar.
 
 ## ADR 001 – Stegvis läsning före import (2026-11-01)
 
@@ -53,3 +56,22 @@ YAML-export. Alternativ: en server med inloggning och direkt GitHub-skrivning.
 Skäl: användaren kan själv skriva söktermer utan installation, API-nycklar eller
 risk för oavsiktlig Zotero-import. Konsekvens: exportfilen måste införas separat
 i repositoryt; provning av relevans sker i PubMed och kräver fortfarande granskning.
+
+## ADR 009 – Användarstyrt godkännande via samling
+
+Användaren godkände automatisk status när en appreferens läggs i godkänd-samlingen.
+Enbart tags/collections får ändras, med versionsskydd. Egna metadata/notes bevaras
+och avvakta/exkluderad rapporteras som konflikt. Timkontroll kompletterar daglig import.
+
+## ADR 010 – Separat retrospektivt PDAT-läge från 2018
+
+Löpande EDAT och retrospektiv PDAT får inte blandas implicit. Från-datum och
+valda sök-ID:n styr ett separat manuellt workflow, standard dry-run. Intervall
+över 9999 träffar delas utan överlapp och counts verifieras. Ingen stor
+historisk bulkimport startas enbart för att en ny query lagts till.
+
+## ADR 011 – Skilda NPH- och AI-bevakningar
+
+Användaren valde NPH utan bilddiagnostiskt filter och AI inom bilddiagnostik som
+separata sökningar. Inget påtvingat AI/NPH-intersektionfilter. Samma artikel kan
+matcha båda med en biblioteksreferens och flera ämneskopplingar/provenienser.

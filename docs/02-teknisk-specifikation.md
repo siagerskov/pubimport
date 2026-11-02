@@ -1,105 +1,93 @@
 # Teknisk specifikation
 
-## Implementerat i 0.1
+## Verktyg och konfiguration
 
-Python 3.12+, PyYAML för strikt konfigurationsvalidering och defusedxml för
-XML utan entity-expansion. Standardbibliotekets urllib använder miljöns proxy
-och betrodda CA; TLS-verifiering är på. Transport, klocka och väntan kan injiceras.
+Python 3.12+, PyYAML safe_load med strikt fälttypkontroll och defusedxml.
+uv.lock låser beroenden. HTTP använder urllib, miljöns proxy och betrodda CA;
+TLS-verifiering behålls. Transport, klocka och väntan är injicerbara i tester.
 
-Bas: `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/`.
+Varje sökning har unikt id, title, enabled, strängversion, description, query
+samt lookback_days (1–365). Query-version höjs när query ändras. Nya sökningar
+läggs till i YAML; inga separata kodmoduler behövs per ämne.
 
-| Endpoint | Format | Parametrar |
-|---|---|---|
-| `esearch.fcgi` | JSON | db=pubmed, term, datetype=edat, mindate/maxdate, retstart, retmax≤200, sort=pub date |
-| `efetch.fcgi` | XML | db=pubmed, id (högst 100 per batch), retmode=xml |
+## PubMed E-utilities
 
-Båda använder POST för att undvika nycklar i URL-loggar. `tool=pubmed-zotero`,
-valfri `NCBI_EMAIL` och `NCBI_API_KEY` skickas i formulärkroppen. Inga kroppar
-eller råa undantag loggas. Högst fyra försök, 30 sekunders timeout per anrop,
-minst 0,35 sekunder mellan seriella anrop. Nätfel, 429 och 5xx återförsöks med
-1/2/4 sekunders backoff. Retry-After i sekunder eller HTTP-datum respekteras;
-över 120 sekunders begärd paus avbryter säkert. Andra HTTP-fel avbryter direkt.
-Svar större än 20 MiB avvisas. Säker XML-parsning tillåter inte entity-expansion.
+Bas: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/.
 
-ESearch hämtar alla PMID inom fönstret, eller ett explicit maxantal. 9999 är
-maxgräns för okapad sökning. Inkonsekventa counts, dubbla ID:n, tomma ofullständiga
-sidor och saknad EFetch-metadata avbryter i stället för att tyst ge delresultat.
-NCBI kan ändras mellan sidor; körningen är inte en transaktionell snapshot.
-PubmedBookArticle stöds inte ännu och leder till tydligt fel, aldrig tyst bortfall.
-
-`Article`: PMID, nullable titel, författare (family/given/collective), tidskrift,
-nullable datum, abstract och DOI. Inline-XML blir text; strukturerade abstracts
-behåller etiketter. Datum behåller precision (t.ex. `2026-Nov` eller
-`2026 Winter`), inga dagar fabriceras. DOI blir gemener och DOI-URL-prefix tas
-bort. Länk härleds från PMID. Saknat PMID är fel; andra saknade data blir null
-eller tom författarlista.
-
-`Provenance`: sök-ID, sökversion, exakt query, söktid och upptäcktstid i UTC.
-JSON innehåller körsammanfattning, datumintervall, faktisk totalmängd och explicit
-trunkering. Samma PMID i flera sökningar får en artikel med flera provenienser.
-Detta är steget före dubblettkontroll mot biblioteket. Discoveryrapportens
-`status=discovered` beskriver upptäckten. Vid dry-run är `imported=0`; sync-delen
-redovisar nya/kända och apply uppdaterar antalet bekräftade importer.
-
-## Zotero-kontrakt i 0.2
-
-Bas: `https://api.zotero.org/users/{id}/` eller `/groups/{id}/`.
-Header `Zotero-API-Version: 3` och `Zotero-API-Key` används. Redirects följs
-aldrig med nyckeln. Läsning och skrivning har 30 sekunders timeout. GET kan
-återförsökas högst fyra gånger vid nätfel/429/5xx. Backoff och numerisk
-Retry-After respekteras, paus över 120 sekunder ger fel i stället för långt väntande.
-Skrivningar återförsöks aldrig automatiskt: resultatet kan redan vara sparat.
-
-| Operation | Användning |
+| Endpoint | Funktion |
 |---|---|
-| GET collections | Alla samlingar, 100 per sida, Total-Results och Last-Modified-Version |
-| GET items, includeTrashed=1 | Alla poster inklusive notes och papperskorg, 100 per sida |
-| POST collections | En samling per request, successful/failed verifieras |
-| POST items | En referens eller proveniensanteckning per request |
-| PATCH items/{key} | Endast union av samlingar på appens ännu ogranskade inkorgsposter |
+| POST esearch.fcgi | db=pubmed, term, retmode=json, retstart, retmax≤200, datetype, mindate/maxdate, sort=pub date |
+| POST efetch.fcgi | db=pubmed, id i batchar om högst 100, retmode=xml |
 
-Samtliga sidor måste ha samma biblioteksversion och konsekvent antal utan
-dubbla nycklar. Skrivning använder If-Unmodified-Since-Version från snapshot
-eller senast bekräftade skrivning. HTTP 412 avbryter säkert. POST använder även
-Zotero-Write-Token från payloadens SHA-256 (32 tecken). Om skrivsvaret försvinner
-avbryts körningen: ny läsning krävs och inga blinda POST-retries görs.
+Valfri NCBI_EMAIL/NCBI_API_KEY skickas i formulärkroppen, aldrig loggad URL.
+Timeout 30 sekunder, fyra försök, konservativ seriell pacing på 0,35 sekunder.
+Timeout/nätfel/429/5xx återförsöks med begränsad backoff. Retry-After respekteras;
+paus över 120 sekunder avbryter. Andra HTTP-fel avbryter direkt. Svar är
+begränsade till 20 MiB; osäker XML/entity-expansion avvisas.
 
-Mappning: journalArticle; titel → title, abstract → abstractNote,
-tidskrift → publicationTitle, partiellt datum → date, författare → creators,
-DOI → DOI, PubMed-länk → url. PMID sparas i extra tillsammans med
-`PubMed-Zotero: managed-v1`. Saknad titel skapar ingen påhittad referens.
-Bibliotekets befintliga titlar, metadata, taggar och egna notes uppdateras aldrig.
+Daglig EDAT-sökning använder 14 kalenderdagar inklusive dagens UTC-datum.
+Retrospektivt läge använder explicita datum och normalt PDAT. Om en okapad
+sökning har fler än 9999 träffar delar pipeline intervallet i två icke
+överlappande datumintervall tills varje del kan hämtas. PMID dedupliceras över
+delar och antal jämförs med ursprungssvaret. Oförenliga antal, saknade sidor
+eller metadata stoppar körningen. Över 9999 på en enda dag kräver snävare query.
+En explicit limit ger ett synligt trunkerat provurval utan full datumuppdelning.
+NCBI är ingen transaktionell snapshot; förändrade resultat kan kräva omkörning.
+PubmedBookArticle stöds inte och ger ett tydligt fel i stället för tyst bortfall.
 
-Matchning: PMID från extra eller exakt PubMed-URL först, normaliserad DOI
-sekundärt. Flera matchningar, olika poster för PMID/DOI eller samma DOI med
-olika PMID stoppar hela planen för manuell granskning. Poster utan DOI matchas
-med PMID; befintliga poster utan någon igenkännbar identifierare kan inte säkert
-identifieras. Titelmatchning och automatisk sammanslagning används inte.
+## Data och proveniens
 
-Proveniens sparas i separata HTML-escapade notes på appskapade poster.
-En deterministisk markör per sök-ID/version/query gör dem idempotenta;
-söktid och första upptäckt i den sparade anteckningen bevaras vid omkörning.
-Befintliga manuella poster får inga oombedda annoteringar. Notes som användaren
-raderar kan återskapas på appskapade poster. Granskade och papperskorgslagda poster
-flyttas aldrig tillbaka till inkorgen; papperskorgsposter annoteras inte heller.
+Article har PMID, nullable titel, författare (family/given/collective), tidskrift,
+datum med källans precision, abstract och DOI. Inline-XML blir text och
+strukturerade abstracts behåller etiketter. Saknade data fabriceras inte.
+DOI normaliseras och PubMed-länk härleds från PMID. Saknat PMID är fel;
+saknad titel räknas som metadata_missing och importeras inte.
 
-Planen innehåller symboliska referenser för ännu oskapade samlingar/poster.
-Apply löser dessa till bekräftade Zotero-nycklar i rätt ordning. Partiellt fel
-ger exitkod 1 och räknare över bekräftade importer/slutförda steg. En okänd
-skrivning kan ha genomförts trots att den inte räknats som bekräftad. Det finns
-ingen transaktion över hela körningen och ingen automatisk rollback.
+Proveniens innehåller sök-ID, query-version, exakt query, UTC-söktid/upptäcktstid,
+datumtyp och fönstrets start/slut. Första sparade proveniens behålls för samma
+sök-ID/version/query; senare datumfönster skriver inte över den. Överlappande
+bevakningar ger flera proveniensanteckningar på samma referens.
 
-Mockade kontrakt är verifierade; verklig API-kompatibilitet, behörighet och pilot
-återstår innan produktionsklarhet kan hävdas.
+## Zotero API v3
 
-## Godkännandesynk efter användarens uttryckliga beslut
+Bas: https://api.zotero.org/users/{id}/ eller groups/{id}/. Headers:
+Zotero-API-Version:3 och Zotero-API-Key. Redirects följs inte med credentials.
+GET /keys/current kontrollerar rättigheter och rätt personligt bibliotek; bara
+booleska library/notes/write behålls. Personliga bibliotek kräver Allow notes access.
 
-Regeln om att inte ändra manuella statusar har ett specifikt godkänt undantag:
-medlemskap i godkänd-samlingen är användarens godkännandesignal. Appskapade
-journalArticle-poster som inte är raderade får status/godkand och lämnar
-inkorgsträdet. Endast taggar för ej-granskad/godkand/godkänd eller avsaknad av
-status får normaliseras. Andra statusar lämnas oförändrade och rapporteras.
-Reconciliation räknas i review_updates/reviews_completed och skapar inga nya
-referenser. Den uppdaterar tags och collections atomärt per post med
-If-Unmodified-Since-Version. Tidigare absoluta formuleringar om orörda statusar
-avser tiden före detta användargodkända undantag; metadata och egna taggar skyddas fortsatt.
+GET collections och items (includeTrashed=1) läser 100 per sida. Samma
+Last-Modified-Version och konsekvent Total-Results krävs för hela snapshoten.
+POST skapar en samling/referens/note per request och successful/failed verifieras.
+PATCH ändrar enbart avsiktliga tags/collections. Alla ändringar använder
+If-Unmodified-Since-Version; 412 stoppar samtidiga överskrivningar. POST har
+även Zotero-Write-Token. Skrivningar återförsöks aldrig blint efter oklart svar.
+Ny läsning före omkörning återanvänder redan skapade referenser/notes.
+
+journalArticle-mappning: title, creators, publicationTitle, date, abstractNote,
+DOI, url och extra med PMID samt appmarkör. Notes innehåller HTML-escapad
+proveniens med deterministisk markör. Användarens egna notes ersätts inte.
+
+## Matchning, batchar och godkännande
+
+PMID i Extra eller exakt PubMed-URL matchas först, normaliserad DOI sekundärt.
+Flera träffar, olika poster för PMID/DOI eller samma DOI med olika PMID stoppar
+hela planen. Ingen osäker titelmatchning eller automatisk sammanslagning görs.
+
+Batchläget validerar först hela träffmängden, väljer högst 20 nya referenser
+växelvis mellan bevakningarna och rapporterar resten som deferred. Kända poster
+bevaras. Utan --batch-imports avbryter överskridet max-imports hela planen.
+Det finns ingen transaktion över hela körningen eller automatisk rollback.
+
+review_plan behandlar även appposter utanför aktuellt PubMed-fönster. Medlemskap
+i godkänd-samlingen är användarens godkännandesignal: status/godkand sätts och
+inkorgsträdet tas bort. Egna taggar, andra samlingar och metadata bevaras.
+Status avvakta/exkluderad/okänd lämnas orörd och räknas som review_conflicts.
+Borttagning ur godkänd-samlingen ger ingen automatisk nedgradering.
+
+## Drift och status
+
+Import, godkännandesynk och backfill delar concurrency. Separata statusjobb har
+contents:write men inga Zotero-credentials. De publicerar bara räknare, utfall,
+källcommit, datum/sök-ID och run-länk till separata grenar. Fulla queries,
+privata notes och credentials ingår inte i statusfilerna. Verkliga utfall ska
+kontrolleras mot rätt källcommit och run_id; tester ersätter inte livevalidering.

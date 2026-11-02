@@ -11,7 +11,8 @@ Varje schemalagd körning hämtar hela det konfigurerade 14-dagars EDAT-fönstre
 läser Zotero inklusive anteckningar och papperskorg och importerar **högst tjugo
 nya referenser totalt**. Tillgängliga platser fördelas växelvis mellan sökningarna.
 Nya referenser får status/ej-granskad och rätt ämnessamling under inkorgen.
-Befintliga metadata och manuella statusar ändras inte.
+Befintliga metadata bevaras. Status ändras enbart genom den användargodkända
+samlingsstyrda godkännanderegeln som beskrivs nedan.
 
 Hela urvalets identifierarkonflikter kontrolleras innan en delmängd väljs.
 Överskjutande nya referenser redovisas som `deferred`/Uppskjutna av importtak.
@@ -35,9 +36,8 @@ Resultatet läses tillbaka. Rättningen kan bara köras på den exakta godkända
 startcommitten och första run_attempt, aldrig på dagligt schema.
 
 Samma startkörning gör en första begränsad fullfönsterimport med tiotak.
-Framtida vanliga kodpushar kör **dry-run**, inte apply. Verkligt utfall från
-startkörning och första schemalagda körning måste observeras innan driftklarhet
-kan hävdas; tekniska tester ersätter inte det.
+Framtida vanliga kodpushar kör **dry-run**, inte apply. Startkörningen är observerad och lyckades; den första tidstyrda körningen
+ska observeras separat. Tekniska tester ersätter inte verkliga körresultat.
 
 ## Manuell körning och stopp
 
@@ -110,3 +110,16 @@ konkurrensskydd. Kontrolljobbet importerar aldrig nya referenser och delar
 concurrency med importen. Separat säker status finns på grenen review-status,
 i review-status.json. Det ändrar inte den dagliga importens automation-status.
 Statusjobbet har repository-skrivrättighet men saknar Zotero-nyckel.
+
+## Fler bevakningar och retrospektiv import
+
+För nya sökningar används web/search-builder.html och config/searches.yaml.
+Aktuella separata bevakningar är MSK, AI inom bilddiagnostik och NPH. En ny query
+behöver inget nytt workflow; dess samling identifieras/skapas vid import.
+Daglig bevakning använder fortfarande EDAT och ett gemensamt tjugotak.
+
+Retrospective PubMed search använder separat PDAT-intervall från 2018 och egna
+sök-ID:n; se 11-retrospektiv-import.md. Standardläget är dry-run. Faktisk återfyllnad föreslås börja med NPH,
+publiceringsår 2018 och högst 20 nya, men behöver uttryckligt batchgodkännande.
+Vanliga pushar startar ingen historisk import. Retrospektiv status ligger i
+backfill-status/backfill-status.json.

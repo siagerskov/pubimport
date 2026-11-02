@@ -65,3 +65,14 @@ behåller sin första proveniens. Överlapp mellan bevakningar ger flera
 sökprovenienser på samma referens. Ingen PDF-hämtning eller evidensgradering görs.
 AI-strategins titelkrav prioriterar precision och kan missa arbeten som bara
 nämner AI/modalitet i abstract; det är ingen garanterat komplett systematisk sökning.
+
+## Observerad kartläggning 2026-11-02
+
+Read-only-körning 41464377138 gav 17977 AI-träffar och 2008 NPH-träffar på PDAT
+2018-01-01–2026-11-02. Summan 19985 är före överlapp och befintliga biblioteksposter.
+Fem provposter hämtades per sökning; inga importer gjordes i kartläggningen.
+
+Föreslagen första faktiska import är NPH, publiceringsår 2018, full sökning
+men högst 20 nya referenser. Den har inte startats och kräver uttryckligt godkännande. Det är inte samma sak som att hela
+NPH-historiken eller allt AI-material är färdigimporterat. Fler år/batchar kan
+köras med samma verktyg efter granskning av antal/urval och önskad kapacitet.

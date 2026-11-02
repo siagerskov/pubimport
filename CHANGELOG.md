@@ -2,6 +2,12 @@
 
 ## 2026-11-02
 
+- Dokumentationen konsoliderad till aktuellt flöde: 20-tak, timvis godkännande,
+  separata NPH/AI-bevakningar och retrospektiv PDAT. Äldre utfall tydligt historik.
+- Retrospektiv read-only-körning verifierad: AI 17977 och NPH 2008 träffar sedan
+  2018-01-01. Föreslagen första NPH-batch: år 2018, högst 20 nya; ännu inte godkänd/startad.
+- Sökverktyget bevarar egna utkast men lägger till nya standardbevakningar säkert.
+
 - Separat NPH-bevakning utan radiologi-/AI-filter enligt användarens val.
   AI inom bilddiagnostik och MSK finns kvar som separata sökningar.
 - Retrospektivt PDAT-läge med start 2018-01-01, val av bevakningar och slutdatum.

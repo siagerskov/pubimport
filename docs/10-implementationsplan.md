@@ -1,60 +1,34 @@
-# Implementationsplan
+# Genomförandestatus och återstående arbete
 
-Aktuellt 2026-11-02: verklig läsning, godkänd import av fyra referenser och
-noll återstående åtgärder för samma urval är verifierade via användarens
-Actions-resultat. Notes-åtkomst är åtgärdad. Manuell Zotero-granskning och
-daglig drift är nu godkänd och konfigurerad. Startutfall och första schemakörning
-återstår; se 06-validering.md.
+## Implementerat och verifierat
 
-## Etapp 0 – Bootstrap
+- Pythonpaket, låsfil, CI, offline-fixtures, testbar HTTP och versionshanterad dokumentation.
+- PubMed ESearch/EFetch med metadata, paginering, återförsök och fullständighetskontroller.
+- Zotero-snapshot, behörighetskontroll, PMID/DOI-matchning, proveniens och versionsskyddad import.
+- Fyrpostspilot verifierad via användarens loggar; notes-rättigheter åtgärdade.
+- Användarens manuella granskning och en riktad taggrättning verifierade.
+- Daglig import konfigurerad 05:23 UTC, tak höjt från 10 till 20.
+  Verklig startimport av tio referenser utan fel observerad. Första schematrigger
+  är separat från startkörningen och ska fortfarande verifieras när den inträffar.
+- Användargodkänd timvis godkännandesynk: första livekontrollen av 14 poster lyckades.
+- Fristående sökverktyg med YAML-export och bevarande av utkast vid nya grundsökningar.
+- Statusgrenar gör att resultat kan läsas direkt via Git.
 
-Leverera paketstruktur, projektregler, README, licensförslag, låsfil, offline-CI,
-dokumentationsstruktur och kontochecklista. Acceptans: installation och verktyg
-fungerar utan hemligheter. Status: implementerad, verifieringsutfall i 06.
+## Nytillkommet enligt användarens önskemål
 
-## Etapp 1 – PubMed-läsning
+NPH är separat utan radiologifilter; AI inom bilddiagnostik är separat och MSK
+behålls. Retrospektivt PDAT-läge från 2018 med datumuppdelning är implementerat.
+Första kartläggningen är read-only med fem provposter per sökning; faktisk
+historisk bulkimport planeras efter verifierade antal/urval och batchstorlek.
 
-Leverera validerad sökkonfiguration, ESearch/EFetch, bibliografiska modeller,
-proveniens, paginering, tidsgränser och retry. Fixtures och CLI ska visa
-provdata utan externa skrivningar. Acceptans: offline-kontraktstester och CLI
-passerar; verklig relevans bedöms separat. Status: implementerad, utfall i 06.
+## Fortsatt validering och begränsningar
 
-## Etapp 2 – Zotero-inkorg
+1. Följ första faktiska schemakörningen via automation-status och review-status.
+2. Bedöm relevans och recall för varje query. Titelbaserad AI-strategi kan missa relevanta arbeten.
+3. Granska retroresultat från 2018 och besluta om årsvise importbatchar/kapacitet.
+4. Övervaka deferred och review_conflicts; rullande fönster är ingen beständig kö.
+5. Fulltext, automatisk kvalitetsgradering, destruktiv sammanslagning och automatisk
+   metadataöverskrivning ingår inte. Licensförslag MIT är ännu inget valt licensavtal.
 
-Implementerat i 0.2, verklig API-validering återstår: mockbar API-version-3-klient, bibliotekskonfiguration, paginerad
-läsning, samlingsidentifiering, metadata-mappning och strikt dry-run. Testa payloads,
-headers och fel utan riktiga nycklar. Dokumentera åtkomst och minsta behörighet.
-Ingen verklig skrivning behövs för att utveckla eller testa detta.
-
-## Etapp 3 – Idempotens
-
-Implementerat i 0.2 och verifierat mot simulerat bibliotek.
-
-PMID först, DOI sekundärt, explicit konfliktpolicy; överlapp och nya samlingskopplingar
-utan att förlora manuella statusar. Testa omkörning, partiellt batchfel och
-återupptagning med simulerat bibliotek. Full körsammanfattning och separata
-proveniensanteckningar. Acceptans: alla relevanta brief-testfall offline.
-
-## Etapp 4 – Automatisering
-
-Manuella lägen och körinstruktioner finns i 0.2. Actions-körning återstår;
-dagligt schema är avstängt.
-
-Utöka manuellt workflow till riktig dry-run och dokumentera Secrets,
-concurrency, notifieringar och kvoter. Schema förbereds men aktiveras först efter
-uttryckligt godkännande. Inga hemligheter till externa PR-jobb.
-
-## Etapp 5 – Pilot och drift
-
-Kräver användarens beslut om bibliotek, säkert konfigurerade credentials,
-granskade sökningar och uttryckligt godkännande av pilotimport. Begränsa antal,
-granska poster manuellt och verifiera omkörning. Dokumentera faktiska utfall.
-Separat godkännande före daglig körning. Inget steg markeras klart på grund av
-enbart mockade tester.
-
-## Automatikens start verifierad 2026-11-02
-
-Godkänd startkörning lyckades: taggen verifierad och tio nya referenser importerade
-utan fel. Statusgrenen möjliggör direkt uppföljning utan manuellt kopierade loggar.
-Första schemalagda körningen återstår att observera; kapacitet för 427 uppskjutna
-träffar behöver beslutas separat om full täckning inom datumfönstret önskas.
+Faktiska testantal och kör-ID:n finns i 06-validering.md. Historiska formuleringar
+i CHANGELOG/ADR ska läsas som historik; denna fil och driftguiden beskriver aktuell status.

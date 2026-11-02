@@ -45,3 +45,20 @@ def test_offline_runner_writes_actions_summary(monkeypatch, tmp_path, capsys):
     assert "Nya: 2" in summary
     assert "Importerade: 0" in summary
     assert '"mode": "dry-run"' in capsys.readouterr().out
+
+
+def test_runner_forwards_retrospective_dates_and_separate_search_ids(monkeypatch):
+    module = runner()
+    calls = []
+    monkeypatch.setattr(module, "main", lambda args: calls.append(args) or 0)
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
+    monkeypatch.setenv("SYNC_MODE", "dry-run")
+    monkeypatch.setenv("SYNC_FROM_DATE", "2018-01-01")
+    monkeypatch.setenv("SYNC_UNTIL_DATE", "2018-12-31")
+    monkeypatch.setenv("SYNC_SEARCH_IDS", "nph, ai-radiology")
+    assert module.run() == 0
+    args = calls[0]
+    assert args[args.index("--from-date") + 1] == "2018-01-01"
+    assert args[args.index("--until-date") + 1] == "2018-12-31"
+    assert args.count("--search-id") == 2
+    assert "--apply" not in args

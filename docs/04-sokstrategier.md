@@ -1,90 +1,70 @@
-# Sökstrategier
+# Sökstrategier och nya bevakningar
 
-De fullständiga körbara strängarna finns i `config/searches.yaml`, MSK version `4` och AI version `3`.
-De är förslag, inte kliniskt validerade slutliga strategier.
+## Aktuella separata bevakningar
 
-## Verklig dry-run 2026-11-02, version 1
+Användaren har valt NPH separat och AI inom bilddiagnostik separat. MSK ligger
+kvar sedan tidigare. Sökningarna är arbetsförslag som kräver fortlöpande
+relevansgranskning; de är inte validerade systematiska litteratursökningar.
 
-Användarens Actions-logg från körning 41438100545 visar 130 MSK-träffar och
-189 AI-träffar under EDAT 2026-10-20–2026-11-02. Fem hämtades per sökning:
-nio unika PMID, inga metadatafel, nio nya poster och noll importer.
-Urvalet är trunkerat och visar inte relevansen för hela träffmängden.
-Bland titelträffarna fanns mangopuréspektroskopi och fluorescerande prober;
-ämnesprecisionen var otillräcklig för en oövervakad import.
+### MSK-radiologi – `msk-radiology`, version 4
 
-## Version 2: snävare förslag
+```text
+("Musculoskeletal Diseases"[MeSH Terms] OR musculoskeletal[Title/Abstract] OR bone[Title/Abstract] OR joint[Title/Abstract] OR tendon*[Title/Abstract] OR ligament*[Title/Abstract] OR cartilage[Title/Abstract] OR menisc*[Title/Abstract] OR spine[Title/Abstract] OR spinal[Title/Abstract] OR knee[Title/Abstract] OR hip[Title/Abstract] OR shoulder[Title/Abstract] OR ankle[Title/Abstract]) AND (radiolog*[Title] OR MRI[Title] OR "MR imaging"[Title] OR "magnetic resonance imaging"[Title] OR CT[Title] OR "computed tomography"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title])
+```
 
-Det breda exploderande MeSH-begreppet Diagnostic Imaging är borttaget från
-båda sökningarna. I stället krävs något av de uttryckliga modalitetsbegreppen
-radiologi, MRI, CT, radiografi eller ultraljud i titel/abstract eller MeSH.
-Radiology/Radiography/Ultrasonography använder noexp för att begränsa automatiska
-MeSH-undergrenar. MRI- och CT-MeSH får fortfarande sina relevanta undergrenar.
+Användarens MSK-sökning version 4; använd i verifierad pilot. Precision och relevans behöver fortsatt följas.
 
-MSK-delen kombinerar Musculoskeletal Diseases/System med fritext för bland annat
-ben, leder, senor, ligament, brosk, menisk och ryggrad. AI-delen kräver AI-MeSH
-eller explicita begrepp för artificial intelligence/machine learning/deep learning.
-Fullständiga queries i YAML är den enda körbara källan och versionshanteras ihop
-med denna dokumentation. Inget tidskriftsfilter eller evidensurval införs.
+### AI inom radiologi – `ai-radiology`, version 3
 
-Version 2 behöver en ny verklig dry-run och klinisk bedömning. Den garanterar
-inte att irrelevanta arbeten försvinner: modaliteter kan användas i prekliniska
-studier och breda anatomiska ord kan ge falska träffar. Samtidigt kan artiklar om
-andra modaliteter eller utan explicita termer missas. Ingen retrospektiv titel-
-eller MeSH-granskning av alla 319 träffar har genomförts.
+```text
+("artificial intelligence"[Title] OR "machine learning"[Title] OR "deep learning"[Title] OR "neural network"[Title] OR "neural networks"[Title] OR "AI-based"[Title] OR "AI-driven"[Title]) AND (radiolog*[Title] OR MRI[Title] OR "MR imaging"[Title] OR "magnetic resonance imaging"[Title] OR CT[Title] OR "computed tomography"[Title] OR radiograph*[Title] OR ultrasound[Title] OR ultrasonograph*[Title] OR fluoroscop*[Title] OR tomosynthesis[Title])
+```
 
-## Datum och proveniens
+Förslag med högre precision för pilot: radiologisk modalitet i titeln. Lägre recall förväntas; klinisk granskning återstår.
 
-14 kalenderdagar inklusive dagens UTC-datum används mot EDAT, inte publiceringsdatum.
-Överlappet garanterar inte att mycket sent ändrade poster fångas; MDAT/backfill
-är separata framtida beslut. Sök-ID, exakt query och version sparas per träff.
-Proveniens från version 1 skrivs inte över när version 2 används.
+### NPH – `nph`, version 1
 
-Syntetiska fixtures visar tekniskt överlapp, inte relevans. Dokumentera verkliga
-träffantal och granskade exempel när varje query-version utvärderas.
+```text
+("Hydrocephalus, Normal Pressure"[MeSH Terms] OR "normal pressure hydrocephalus"[Title/Abstract] OR "normal-pressure hydrocephalus"[Title/Abstract] OR iNPH[Title/Abstract] OR (NPH[Title/Abstract] AND hydrocephalus[Title/Abstract]))
+```
 
-## Verklig dry-run version 2 och nästa förslag
+Separat bevakning av normaltryckshydrocefalus utan bilddiagnostiskt filter; användarens omfattning 2026-11-02.
 
-Körning 41438795739, 2026-11-02: 954 MSK-träffar och 570 AI-träffar,
-fem hämtade per sökning, tio unika PMID, tio nya, noll importer/metadatafel.
-Provurvalet innehöll fortfarande irrelevanta titlar, bland annat NMR-spektra
-för geografiskt ursprung av Lycium barbarum och gliomacellsbiologi.
-Version 2 blev bredare än avsett när fler anatomibegrepp lades till.
-Den kliniska precisionen förbättrades inte tillräckligt.
+## Tolkning och begränsningar
 
-Version 3 är ett uttryckligen mer specifikt pilotförslag: radiologisk modalitet
-måste nämnas i titeln (radiologi, MRI/MR imaging, magnetic resonance imaging, CT,
-computed tomography, radiografi, ultraljud, fluoroskopi eller tomosyntes).
-Det generella uttrycket magnetic resonance och modalitets-MeSH används inte
-längre som alternativ. MSK-delen behåller anatomisk fritext/ämnesindexering,
-men AI-delen kräver explicita AI/ML/DL-begrepp i titeln. Detta kan missa relevanta
-arbeten där AI eller modalitet bara framgår av abstract/indexering. Det är ett
-medvetet precisionsförslag för pilot, inte en komplett litteratursökningsstrategi.
-Verklig relevans och träffantal för version 3 återstår att granska.
+MSK och AI-strategierna kräver radiologisk modalitet i titel för högre precision.
+AI kräver dessutom uttryckliga AI/ML/DL-begrepp i titel. Det kan missa relevanta
+arbeten där metoden enbart framgår av abstract, liksom andra diagnostiska
+modaliteter. Ingen automatisk evidensgradering eller tidskriftsbegränsning görs.
+NPH omfattar även klinik, gång/kognition, shuntbehandling och prognos; inget
+bilddiagnostiskt eller AI-filter används. NPH ensamt kräver hydrocephalus-kontext
+för att minska andra betydelser av förkortningen.
 
-## Bygg egna sökningar utan kod
+En referens kan matcha både AI och NPH men får en Zotero-post med rätt
+ämnesmedlemskap och flera provenienser. Förklaringar till tidigare query-versioner
+och observerade provträffar finns i CHANGELOG och 06-validering.md.
 
-`web/search-builder.html` är ett fristående formulär för termgrupper och färdiga
-PubMed-queries. En term/fras per rad; OR inom grupp, AND mellan ämne och metod,
-valfri NOT mot titel/abstract. Avancerad syntax används endast i query-läget.
-Ord/fraselement citeras i term-läget; hur trunkering och fraser tolkas måste
-kontrolleras i PubMeds Search Details efter provkörning. Ingen lokal simulering
-påstår sig kunna validera PubMeds kliniska relevans eller kompletta querysyntax.
+## Lägg till fler sökningar
 
-Exporten använder JSON-citerade YAML-strängar, booleskt enabled, unika stabila ID:n,
-1–365 dagars fönster och query-version. Den kan läsas av appens befintliga validator.
-Utkast lagras enbart efter ett uttryckligt klick i den lokala webbläsaren. Export
-och provlänk aktiverar ingen import; införande av YAML och pilot är separata steg.
+1. Öppna den senaste web/search-builder.html i webbläsaren.
+2. Välj Ny bevakning, ge ett namn och ett unikt stabilt ID.
+3. Bygg av söktermer eller klistra in en fullständig query i avancerat läge.
+   Ändringar direkt i PubMed/MeSH-sidan förs inte automatiskt tillbaka till verktyget;
+   kopiera den färdiga strängen tillbaka innan export.
+4. Prova i PubMed och granska relevans. Ange om termer ska sökas i titel eller abstract.
+5. Exportera searches.yaml. Filen innehåller alla bevakningar, inte bara den valda.
+6. Dela filen i utvecklingschatten eller inför den som config/searches.yaml via Git.
+   Validering/test och read-only-körning ska göras före fortsatt import.
 
-## MSK version 4 – användarens query, 2026-11-02
+ID ska behållas när en befintlig bevakning justeras; höj query-version vid ändrad
+query. Verktyget gör versionshöjning från sin basversion och lägger till nya
+medföljande bevakningar vid inläsning av äldre lokala utkast utan att kasta egna
+queryändringar. En gammal nedladdad HTML-fil behöver ersättas med senaste versionen.
 
-Användaren lämnade den fullständiga MSK-strängen direkt i chatten. Den är införd
-exakt, med samma parenteser och fälttaggar. Jämfört med version 3 är enbart
-`fluoroscop*[Title]` och `tomosynthesis[Title]` borttagna från MSK:s modalitetsgrupp.
-AI-sökningen ligger kvar på version 3. Sökverktygets inbyggda grundförslag är
-synkroniserade; ett tidigare lokalt sparat webbläsarutkast kan fortfarande ha
-äldre innehåll och kan raderas med Radera lokalt utkast följt av omladdning.
-Relevans bedöms i kommande dry-run. Detta innebär inget godkännande av import.
+## Datum
 
-Användaren rapporterade 32 träffar vid sin manuella PubMed-sökning. Exakt
-datumfilter och söktid för den jämförelsen är inte fastställda; antalet ska
-inte direkt likställas med appens 14-dagars EDAT-resultat.
+Löpande bevakning: 14 kalenderdagar inklusive idag UTC på EDAT, när posten
+registrerats i PubMed. Detta fångar överlapp men inte alla sent korrigerade poster.
+Retrospektivt: 2018-01-01 till vald slutdag på PDAT, publiceringsdatum enligt
+PubMed. Resultatantal från dessa datumtyper kan inte direkt jämföras.
+Se 11-retrospektiv-import.md för intervall, provurval och granskad import.

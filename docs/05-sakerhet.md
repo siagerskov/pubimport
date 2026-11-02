@@ -28,3 +28,10 @@ Endast booleska behörigheter behålls; nyckelvärdet i metadata skrivs aldrig u
 Utan notes-åtkomst kan redan skapade anteckningar vara osynliga, vilket gör
 omkörningskontrollen ofullständig. Skapa inga ersättningsanteckningar förrän
 full läsåtkomst verifierats.
+
+Samlingsstyrd statusändring är uttryckligen användargodkänd. Endast appskapade
+referenser i godkänd-samlingen får status/godkand och lämnar inkorgsträdet;
+avvakta/exkluderad och andra konflikter rapporteras utan överskrivning.
+Retrospektiva datum utökar urvalet, inte behörigheten: granska antal och
+batchstorlek innan stora historiska importer. Statusgrenar publicerar bara
+räknare, datum/sök-ID, run-länk och källcommit, aldrig API-nycklar eller privata notes.

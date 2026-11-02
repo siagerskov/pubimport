@@ -72,5 +72,7 @@ Ingen sådan pilot har ännu genomförts.
 - Proxy blockerar domän: ändra tillåtna domäner via miljöinställningarna.
 - Inga nya träffar: granska EDAT-fönstret; klinisk relevans och backfill är separata frågor.
 
-Kod behöver finnas på GitHub för Actions. Lokalt skapade filer/snapshot innebär
-inte att de är pushade. Granska och versionshantera ändringarna innan workflow körs.
+Koden finns nu på GitHub och nycklarna är konfigurerade där. Nya installationer
+behöver fortfarande motsvarande Secrets/Variables och egen verifierad dry-run.
+För fler bevakningar och retrospektiv import, se 04-sokstrategier.md och
+11-retrospektiv-import.md. Ändringar i sökverktyget måste exporteras och införas i Git.

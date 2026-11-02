@@ -73,6 +73,19 @@ const Builder = {
     const date=d=>d.toISOString().slice(0,10).replaceAll('-','/');
     return 'https://pubmed.ncbi.nlm.nih.gov/?'+new URLSearchParams({term:'('+query+') AND ("'+date(start)+'"[EDAT] : "'+date(end)+'"[EDAT])'});
   },
+  mergeDraft(defaults,saved) {
+    this.validate(saved.searches);this.validate(saved.originals);
+    if(saved.searches.length!==saved.originals.length)throw Error('Ofullständigt utkast.');
+    const searches=[],originals=[];
+    saved.searches.forEach((item,i)=>{
+      const base=saved.originals[i], latest=defaults.find(d=>d.id===item.id);
+      const changed=['id','title','query','enabled','lookback_days','description'].some(k=>item[k]!==base[k]);
+      searches.push({...(!changed&&latest?latest:item)});
+      originals.push({...((latest&&Number(latest.version)>=Number(base.version))?latest:base)});
+    });
+    defaults.forEach(item=>{if(!searches.some(s=>s.id===item.id)){searches.push({...item});originals.push({...item});}});
+    this.validate(searches);return {searches,originals};
+  },
   version(original,query){return original.isNew || original.query===query ? original.version : String(Number(original.version)+1);}
 };
 globalThis.SearchBuilder=Builder;
@@ -85,7 +98,7 @@ let searches=structuredClone(defaults), originals=structuredClone(defaults), sel
 const byId=id=>document.getElementById(id);
 try{
  const saved=localStorage.getItem(storageKey);
- if(saved){const parsed=JSON.parse(saved);SearchBuilder.validate(parsed.searches);SearchBuilder.validate(parsed.originals);if(parsed.searches.length!==parsed.originals.length)throw Error();searches=parsed.searches;originals=parsed.originals;}
+ if(saved){const merged=SearchBuilder.mergeDraft(defaults,JSON.parse(saved));searches=merged.searches;originals=merged.originals;}
 }catch{byId('message').textContent='Lokalt utkast kunde inte läsas. Grundförslagen används.';}
 function options(){const select=byId('search');select.replaceChildren();searches.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.title||'Ny bevakning';select.append(o);});select.value=selected;}
 function show(){options();const s=searches[selected];for(const k of ['title','id','query'])byId(k).value=s[k];byId('days').value=s.lookback_days;byId('enabled').checked=s.enabled;byId('mode').value='expert';for(const id of ['topic','method','exclude'])byId(id).value='';render();}

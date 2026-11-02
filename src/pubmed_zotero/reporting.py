@@ -28,6 +28,13 @@ def action_summary(report):
         "",
         "<table><tr><th>PMID</th><th>Titel</th><th>Sökning</th></tr>",
     ]
+    if report.get("date_mode") == "retrospective" and report.get("searches"):
+        dates = report["searches"][0]
+        rows[2:2] = [
+            f"Retrospektiv sökning: {dates['start']}–{dates['end']} "
+            f"({dates['date_type'].upper()}).",
+            "",
+        ]
     for entry in report["articles"]:
         article = entry["article"]
         topics = ", ".join(

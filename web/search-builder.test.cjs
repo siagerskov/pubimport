@@ -45,3 +45,22 @@ test('query changes advance existing versions, new searches start at one',()=>{
  assert.equal(b.version({query:'old',version:'3'},'new'),'4');
  assert.equal(b.version({query:'old',version:'1',isNew:true},'new'),'1');
 });
+
+test('updated defaults add new searches without discarding edited drafts',()=>{
+ const old={...valid,id:'ai',version:'3',query:'old'};
+ const edited={...old,query:'my query',version:'4'};
+ const latest={...old,version:'4',query:'updated default'};
+ const nph={...valid,id:'nph',title:'NPH',version:'1'};
+ const merged=b.mergeDraft([latest,nph],{searches:[edited],originals:[old]});
+ assert.equal(merged.searches.length,2);
+ assert.equal(merged.searches[0].query,'my query');
+ assert.equal(b.version(merged.originals[0],merged.searches[0].query),'5');
+ assert.equal(merged.searches[1].id,'nph');
+});
+test('unchanged old drafts follow the newer saved configuration',()=>{
+ const old={...valid,version:'3',query:'old'};
+ const latest={...old,version:'4',query:'new'};
+ const merged=b.mergeDraft([latest],{searches:[old],originals:[old]});
+ assert.equal(merged.searches[0].query,'new');
+ assert.equal(b.version(merged.originals[0],merged.searches[0].query),'4');
+});
