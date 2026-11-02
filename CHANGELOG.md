@@ -2,6 +2,9 @@
 
 ## 2026-11-02
 
+- Första livekontroll av godkännandeautomatiken lyckades: 14 kända appreferenser,
+  inga väntande statusändringar, inga konflikter/fel och inga nya importer.
+
 - Användargodkänd automatisk status: dragning till godkänd-samlingen sätter
   status/godkand och tar bort inkorgsmedlemskap, även i ämnesundersamlingar.
 - Timvis kontroll utan nya importer, samt samma policy vid import. Egna

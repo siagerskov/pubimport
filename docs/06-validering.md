@@ -116,3 +116,10 @@ konflikter med exkluderad, poster utanför sökfönstret, papperskorg/manuella p
 omkörning och giltiga maskinstatusutdata. Importtaket är höjt till 20.
 Lokalt: 119 Python-tester och sju JavaScript-tester passerar; lint/format godkända.
 Första verkliga timkontrollens utfall återstår att läsa från review-status-grenen.
+
+Första verkliga kontrollen är nu verifierad via review-status.json, Actions
+41456837631, commit 835e8a39a85ed614cb8cf5219b8cd5cd3918012a: success i apply-läge,
+14 kända appreferenser, noll godkännandeuppdateringar, noll konflikter och noll fel.
+Ingen ny referens importerades. Denna första körning behövde inte ändra status;
+positiva flytt-/PATCH-fall är verifierade i tester. Första senare timtrigger och
+nästa verkliga användarflytt kan följas via samma säkra statusgren.
