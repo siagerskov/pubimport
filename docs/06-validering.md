@@ -68,3 +68,8 @@ bevisar inte att anteckningarna saknas: en nyckel utan Allow notes access kan
 göra dem osynliga. Kontroll av keys/current tillagd och synkning spärras utan
 full notes-läsning. En ny read-only-diagnos ska bekräfta de faktiska rättigheterna
 innan någon reparation övervägs.
+
+Användaren meddelade därefter att anteckningsbehörighet lagts till i Zotero.
+En ny read-only-kontroll har begärts för att verifiera att Actions-nyckeln har
+rättigheten och kan läsa redan skapade proveniensanteckningar. Ingen ny
+import eller reparation ingår; utfallet är ännu inte observerat.

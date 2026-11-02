@@ -1,5 +1,6 @@
 name: Read-only pilot diagnosis
 # Includes key permission metadata, never credential values.
+# Recheck after user-reported notes permission update, 2026-11-02.
 on:
   push:
     branches: [main]
