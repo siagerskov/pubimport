@@ -19,10 +19,14 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 def publish(repository, token, commit, status, opener=None, kind="import"):
-    if kind not in {"import", "review"}:
+    if kind not in {"import", "review", "backfill"}:
         raise ValueError("Invalid status kind")
-    branch = BRANCH if kind == "import" else "review-status"
-    filename = FILE if kind == "import" else "review-status.json"
+    branch = {
+        "import": BRANCH,
+        "review": "review-status",
+        "backfill": "backfill-status",
+    }[kind]
+    filename = branch + ".json"
     opener = opener or build_opener(NoRedirect()).open
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise ValueError("Invalid repository")
@@ -93,6 +97,9 @@ def run():
             "review_updates",
             "review_conflicts",
             "reviews_completed",
+            "total_hits",
+            "unique_pmids",
+            "searches",
         }
         and type(v) is int
     }
@@ -107,6 +114,23 @@ def run():
         "tag_fix": os.environ.get("TAG_FIX_RESULT", ""),
         "commit": os.environ.get("GITHUB_SHA", ""),
     }
+    search_stats = json.loads(os.environ.get("SEARCH_SUMMARY") or "[]")
+    status["searches"] = [
+        {
+            k: row[k]
+            for k in (
+                "search_id",
+                "search_version",
+                "total_hits",
+                "fetched",
+                "date_type",
+                "start",
+                "end",
+            )
+            if k in row
+        }
+        for row in search_stats
+    ]
     publish(
         repository,
         os.environ.get("GITHUB_TOKEN", ""),

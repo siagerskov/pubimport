@@ -7,6 +7,19 @@ daglig drift är godkänd och konfigurerad. Startkörningen importerade tio nya
 referenser utan fel och verifierade taggrättningen. Första tidstyrda körningen
 återstår att observera.**
 
+## Bevakningar och historik
+
+Tre separata bevakningar finns: **MSK-radiologi**, **AI inom bilddiagnostik**
+och **NPH**. NPH gäller normaltryckshydrocefalus och är inte begränsad till radiologi.
+För fler bevakningar: använd Ny bevakning i verktyget, exportera YAML och inför
+filen enligt instruktionen nedan. En ny bevakning behöver ett unikt stabilt ID.
+
+Retrospektiv sökning från **2018-01-01** finns i Actions → Retrospective PubMed
+search. Standardvalet är AI och NPH, PDAT-publiceringsdatum och dry-run med fem
+provträffar per sökning. Ingen stor historisk import startas automatiskt.
+Se [retrospektiv import](docs/11-retrospektiv-import.md) för antal, full genomgång,
+årsvise batchar och skillnaden mot daglig EDAT-bevakning.
+
 ## Eget sökverktyg
 
 Öppna `web/search-builder.html` i en vanlig webbläsare (ladda ned HTML-filen
@@ -34,10 +47,10 @@ uv run pubmed-zotero --fixture tests/fixtures/pubmed.xml \
   --zotero-snapshot tests/fixtures/zotero-empty.json
 ```
 
-Detta är en helt offline dry-run. Två syntetiska artiklar hittas av båda
-sökningarna; planen visar fem samlingar, två referenser och fyra separata
+Detta är en helt offline dry-run. Två syntetiska artiklar hittas av tre
+sökningar; planen visar sex samlingar, två referenser och sex separata
 proveniensanteckningar. **Noll externa skrivningar.** `sync.summary.new=2`,
-`sync.summary.actions=11` och `imported=0`. Inga konton eller nycklar behövs.
+`sync.summary.actions=14` och `imported=0`. Inga konton eller nycklar behövs.
 
 I molnmiljön kan `export UV_CACHE_DIR=/workspace/.cache/uv` behövas om den
 vanliga cachen är skrivskyddad. `uv.lock` låser även transitiva beroenden.
@@ -117,6 +130,7 @@ uv run pytest
 - [Säkerhet](docs/05-sakerhet.md), [verifieringsutfall](docs/06-validering.md)
 - [Drift](docs/07-drift-underhall.md), [arkitekturbeslut](docs/08-arkitekturbeslut.md)
 - [Zotero-manual](docs/09-anvandarmanual-zotero.md), [etappplan](docs/10-implementationsplan.md)
+- [Retrospektiv import från 2018](docs/11-retrospektiv-import.md)
 - [Ändringslogg](CHANGELOG.md)
 
 Söksträngarna i `config/searches.yaml` är förslag som behöver klinisk granskning.

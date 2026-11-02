@@ -264,3 +264,9 @@ def test_interrupted_body_is_retried():
     )
     assert c.search("q", start="s", end="e") == ([], 0)
     assert 1 in waits
+
+
+def test_search_passes_pdat_explicitly_to_ncbi():
+    c, transport, _ = client(search_response([]))
+    c.search("q", start="2018/01/01", end="2026/11/02", date_type="pdat")
+    assert parse_qs(transport.calls[0][0].data.decode())["datetype"] == ["pdat"]

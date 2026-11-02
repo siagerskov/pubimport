@@ -24,6 +24,14 @@ class PubMedError(RuntimeError):
     """Safe public error: never includes URLs, credentials or response bodies."""
 
 
+class SearchLimitError(PubMedError):
+    def __init__(self, count):
+        super().__init__(
+            "Fler än 9999 träffar: dela datumintervallet eller avgränsa sökningen."
+        )
+        self.count = count
+
+
 def _text(element) -> str | None:
     if element is None:
         return None
@@ -194,8 +202,16 @@ class PubMedClient:
         ) from None
 
     def search(
-        self, query: str, *, start: str, end: str, limit: int | None = None
+        self,
+        query: str,
+        *,
+        start: str,
+        end: str,
+        limit: int | None = None,
+        date_type: str = "edat",
     ) -> tuple[list[str], int]:
+        if date_type not in {"edat", "pdat"}:
+            raise ValueError("Unsupported date type")
         if limit is not None and limit < 1:
             raise ValueError("limit must be positive")
         ids = []
@@ -210,7 +226,7 @@ class PubMedClient:
                     "retmode": "json",
                     "retstart": len(ids),
                     "retmax": size,
-                    "datetype": "edat",
+                    "datetype": date_type,
                     "mindate": start,
                     "maxdate": end,
                     "sort": "pub date",
@@ -236,9 +252,7 @@ class PubMedClient:
             if total is None:
                 total = count
                 if total > 9999 and (limit is None or limit > 9999):
-                    raise PubMedError(
-                        "Fler än 9999 träffar: minska datumfönstret eller sökningen."
-                    )
+                    raise SearchLimitError(total)
             elif count != total:
                 raise PubMedError(
                     "PubMed-resultatet ändrades under paginering; kör igen."

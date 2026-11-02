@@ -2,6 +2,13 @@
 
 ## 2026-11-02
 
+- Separat NPH-bevakning utan radiologi-/AI-filter enligt användarens val.
+  AI inom bilddiagnostik och MSK finns kvar som separata sökningar.
+- Retrospektivt PDAT-läge med start 2018-01-01, val av bevakningar och slutdatum.
+  Dagligt EDAT-fönster påverkas inte. Datumtyp/intervall sparas i ny proveniens.
+- Automatisk uppdelning av sökintervall över PubMeds 9999-gräns och säker
+  read-only kartläggning via nytt backfill-workflow och separat statusgren.
+
 - Första livekontroll av godkännandeautomatiken lyckades: 14 kända appreferenser,
   inga väntande statusändringar, inga konflikter/fel och inga nya importer.
 

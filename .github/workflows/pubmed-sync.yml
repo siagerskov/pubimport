@@ -44,6 +44,7 @@ jobs:
     outputs:
       import_summary: ${{ steps.import_run.outputs.import_summary }}
       run_mode: ${{ steps.import_run.outputs.run_mode }}
+      search_summary: ${{ steps.import_run.outputs.search_summary }}
       tag_fix: ${{ steps.tag_fix.outputs.tag_fix }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -94,6 +95,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           SYNC_RESULT: ${{ needs.sync.result }}
           RUN_MODE: ${{ needs.sync.outputs.run_mode }}
+          SEARCH_SUMMARY: ${{ needs.sync.outputs.search_summary }}
           IMPORT_SUMMARY: ${{ needs.sync.outputs.import_summary }}
           TAG_FIX_RESULT: ${{ needs.sync.outputs.tag_fix }}
         run: python scripts/publish_status.py

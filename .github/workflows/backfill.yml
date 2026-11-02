@@ -1,0 +1,88 @@
+name: Retrospective PubMed search
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/backfill.yml']
+  workflow_dispatch:
+    inputs:
+      from_date:
+        description: 'Publiceringsdatum från YYYY-MM-DD'
+        default: '2018-01-01'
+      until_date:
+        description: 'Till och med YYYY-MM-DD, tomt = idag UTC'
+        default: ''
+      search_ids:
+        description: 'Bevaknings-ID, kommaseparerade'
+        default: 'ai-radiology,nph'
+      mode:
+        type: choice
+        options: [dry-run, apply]
+        default: dry-run
+      limit:
+        description: 'Provurval per sökning, eller all för full genomgång'
+        default: '5'
+      max_imports:
+        description: 'Högst nya referenser i importbatch'
+        default: '20'
+      confirm_library:
+        description: 'Bekräftat biblioteks-ID vid apply'
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: pubmed-zotero-production
+  cancel-in-progress: false
+jobs:
+  backfill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: zotero-production
+    outputs:
+      import_summary: ${{ steps.search.outputs.import_summary }}
+      run_mode: ${{ steps.search.outputs.run_mode }}
+      search_summary: ${{ steps.search.outputs.search_summary }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - run: python -m pip install uv==0.12.23
+      - run: uv sync --frozen
+      - run: uv run pytest
+      - name: Search publication history separately from daily monitoring
+        id: search
+        env:
+          SYNC_MODE: ${{ inputs.mode || 'dry-run' }}
+          SYNC_FROM_DATE: ${{ inputs.from_date || '2018-01-01' }}
+          SYNC_UNTIL_DATE: ${{ inputs.until_date }}
+          SYNC_SEARCH_IDS: ${{ inputs.search_ids || 'ai-radiology,nph' }}
+          SYNC_LIMIT: ${{ inputs.limit || '5' }}
+          SYNC_BATCH: 'true'
+          MAX_IMPORTS: ${{ inputs.max_imports || '20' }}
+          CONFIRM_LIBRARY: ${{ inputs.confirm_library }}
+          ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
+          ZOTERO_LIBRARY_ID: ${{ vars.ZOTERO_LIBRARY_ID }}
+          ZOTERO_LIBRARY_TYPE: ${{ vars.ZOTERO_LIBRARY_TYPE || 'user' }}
+          NCBI_EMAIL: ${{ vars.NCBI_EMAIL }}
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+        run: uv run python scripts/run_sync.py
+  publish-status:
+    needs: backfill
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SYNC_RESULT: ${{ needs.backfill.result }}
+          RUN_MODE: ${{ needs.backfill.outputs.run_mode }}
+          IMPORT_SUMMARY: ${{ needs.backfill.outputs.import_summary }}
+          SEARCH_SUMMARY: ${{ needs.backfill.outputs.search_summary }}
+          STATUS_KIND: backfill
+        run: python scripts/publish_status.py

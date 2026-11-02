@@ -16,7 +16,9 @@ FIXTURE = ROOT / "tests/fixtures/pubmed.xml"
 
 
 def test_overlap_provenance_dates_and_no_imports():
-    searches = load_searches(CONFIG)
+    searches = [
+        s for s in load_searches(CONFIG) if s.id in {"msk-radiology", "ai-radiology"}
+    ]
     report = discover(
         searches, FixtureReader(FIXTURE), now=datetime(2026, 11, 1, tzinfo=UTC)
     )
@@ -38,7 +40,9 @@ def test_overlap_provenance_dates_and_no_imports():
 
 
 def test_disabled_version_and_limit():
-    searches = load_searches(CONFIG)
+    searches = [
+        s for s in load_searches(CONFIG) if s.id in {"msk-radiology", "ai-radiology"}
+    ]
     next_version = str(int(searches[0].version) + 1)
     searches = [
         replace(searches[0], version=next_version),

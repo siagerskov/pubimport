@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from .config import ConfigurationError, load_searches
@@ -19,7 +20,7 @@ class FixtureReader:
     def __init__(self, path: Path):
         self.articles = parse_articles(path.read_bytes())
 
-    def search(self, query, *, start, end, limit=None):
+    def search(self, query, *, start, end, limit=None, date_type="edat"):
         ids = [a.pmid for a in self.articles]
         return ids[:limit], len(ids)
 
@@ -62,7 +63,25 @@ def main(argv=None) -> int:
         action="store_true",
         help="Importera högst max-imports nya; redovisa övriga som uppskjutna.",
     )
+    parser.add_argument(
+        "--from-date", type=date.fromisoformat, help="Retrospektivt från YYYY-MM-DD."
+    )
+    parser.add_argument(
+        "--until-date",
+        type=date.fromisoformat,
+        help="Till och med YYYY-MM-DD; annars idag UTC.",
+    )
+    parser.add_argument("--date-type", choices=["pdat", "edat"])
+    parser.add_argument(
+        "--search-id", action="append", help="Välj bevakning; kan upprepas."
+    )
     args = parser.parse_args(argv)
+    if args.until_date and not args.from_date:
+        parser.error("--until-date kräver --from-date")
+    if args.from_date and args.from_date > (
+        args.until_date or datetime.now(UTC).date()
+    ):
+        parser.error("Startdatum ligger efter slutdatum")
     if args.apply and (not args.live or not args.zotero):
         parser.error("--apply kräver --live och --zotero; ingen fixture-import tillåts")
     if args.max_imports < 1:
@@ -71,6 +90,11 @@ def main(argv=None) -> int:
         parser.error("--limit måste vara större än noll")
     try:
         searches = load_searches(args.config)
+        if args.search_id:
+            selected = set(args.search_id)
+            if selected - {s.id for s in searches}:
+                raise ConfigurationError("Okänt sök-ID.")
+            searches = [s for s in searches if s.id in selected]
         client = (
             FixtureReader(args.fixture)
             if args.fixture
@@ -79,7 +103,14 @@ def main(argv=None) -> int:
                 api_key=os.environ.get("NCBI_API_KEY"),
             )
         )
-        report = discover(searches, client, limit=args.limit)
+        report = discover(
+            searches,
+            client,
+            limit=args.limit,
+            start_date=args.from_date,
+            end_date=args.until_date,
+            date_type=args.date_type or ("pdat" if args.from_date else "edat"),
+        )
         report["source"] = "synthetic-fixture" if args.fixture else "ncbi"
         if args.zotero or args.zotero_snapshot:
             if args.zotero_snapshot:

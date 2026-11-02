@@ -43,6 +43,9 @@ class Provenance:
     query: str
     searched_at: str
     discovered_at: str
+    date_type: str = "edat"
+    window_start: str | None = None
+    window_end: str | None = None
 
 
 @dataclass

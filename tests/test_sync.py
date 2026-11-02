@@ -45,7 +45,11 @@ class Library:
 
 
 def inputs():
-    searches = load_searches(ROOT / "config/searches.yaml")
+    searches = [
+        s
+        for s in load_searches(ROOT / "config/searches.yaml")
+        if s.id in {"msk-radiology", "ai-radiology"}
+    ]
     report = discover(searches, FixtureReader(ROOT / "tests/fixtures/pubmed.xml"))
     return searches, report
 

@@ -43,6 +43,14 @@ def run():
     else:
         print("Okänt synkläge.", file=sys.stderr)
         return 2
+    if mode != "offline":
+        if from_date := os.environ.get("SYNC_FROM_DATE"):
+            args += ["--from-date", from_date]
+        if until_date := os.environ.get("SYNC_UNTIL_DATE"):
+            args += ["--until-date", until_date]
+        for search_id in os.environ.get("SYNC_SEARCH_IDS", "").split(","):
+            if search_id.strip():
+                args += ["--search-id", search_id.strip()]
     output = io.StringIO()
     with redirect_stdout(output):
         status = main(args)
@@ -50,9 +58,32 @@ def run():
     print(text, end="")
     if text.strip() and (output_path := os.environ.get("GITHUB_OUTPUT")):
         completed = json.loads(text)
-        counts = completed.get("sync", {}).get("summary", completed["summary"])
+        counts = {
+            **completed["summary"],
+            **completed.get("sync", {}).get("summary", {}),
+        }
         with Path(output_path).open("a", encoding="utf-8") as output:
             output.write("run_mode=" + completed["mode"] + "\n")
+            search_stats = [
+                {
+                    k: row[k]
+                    for k in (
+                        "search_id",
+                        "search_version",
+                        "total_hits",
+                        "fetched",
+                        "date_type",
+                        "start",
+                        "end",
+                    )
+                }
+                for row in completed.get("searches", [])
+            ]
+            output.write(
+                "search_summary="
+                + json.dumps(search_stats, separators=(",", ":"))
+                + "\n"
+            )
             output.write(
                 "import_summary=" + json.dumps(counts, separators=(",", ":")) + "\n"
             )
