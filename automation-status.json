@@ -1,32 +1,50 @@
 {
-  "observed_at": "2026-11-02T14:55:28.905139+00:00",
-  "run_id": "41466473198",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41466473198",
+  "observed_at": "2026-11-02T15:30:18.115229+00:00",
+  "run_id": "41471950206",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41471950206",
   "result": "success",
   "event": "push",
-  "mode": "dry-run",
+  "mode": "apply",
   "import_summary": {
     "searches": 3,
-    "total_hits": 484,
-    "unique_pmids": 456,
-    "imported": 0,
+    "total_hits": 4206,
+    "unique_pmids": 92,
+    "imported": 46,
     "errors": 0,
-    "new": 20,
+    "unexamined_pmids": 4069,
+    "new": 46,
     "known": 14,
     "metadata_missing": 0,
     "review_updates": 0,
     "review_conflicts": 0,
-    "actions": 41,
-    "deferred": 422
+    "actions": 93,
+    "deferred": 46,
+    "completed_actions": 93,
+    "reviews_completed": 0
   },
   "tag_fix": "",
-  "commit": "8b4e36084dc2d2832cd26510761468a30e6524d3",
+  "commit": "223ba7ded6e8295c76a2f85f82531306fdd8c037",
+  "daily_budget": {
+    "date": "2026-11-02",
+    "timezone": "Europe/Stockholm",
+    "cap_per_category": 20,
+    "used": {
+      "msk-radiology": 20,
+      "ai-radiology": 20,
+      "nph": 20
+    },
+    "remaining": {
+      "msk-radiology": 0,
+      "ai-radiology": 0,
+      "nph": 0
+    }
+  },
   "searches": [
     {
       "search_id": "msk-radiology",
       "search_version": "4",
       "total_hits": 319,
-      "fetched": 319,
+      "fetched": 26,
       "date_type": "edat",
       "start": "2026/10/20",
       "end": "2026/11/02"
@@ -34,19 +52,19 @@
     {
       "search_id": "ai-radiology",
       "search_version": "3",
-      "total_hits": 150,
-      "fetched": 150,
-      "date_type": "edat",
-      "start": "2026/10/20",
+      "total_hits": 3583,
+      "fetched": 26,
+      "date_type": "pdat",
+      "start": "2026/01/01",
       "end": "2026/11/02"
     },
     {
       "search_id": "nph",
       "search_version": "1",
-      "total_hits": 15,
-      "fetched": 15,
-      "date_type": "edat",
-      "start": "2026/10/20",
+      "total_hits": 304,
+      "fetched": 40,
+      "date_type": "pdat",
+      "start": "2026/01/01",
       "end": "2026/11/02"
     }
   ]
