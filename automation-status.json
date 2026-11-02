@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-11-02T13:46:05.939572+00:00",
-  "run_id": "41455728721",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41455728721",
+  "observed_at": "2026-11-02T13:53:31.438873+00:00",
+  "run_id": "41456837770",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41456837770",
   "result": "success",
   "event": "push",
   "mode": "dry-run",
@@ -9,11 +9,13 @@
     "new": 20,
     "known": 14,
     "metadata_missing": 0,
+    "review_updates": 0,
+    "review_conflicts": 0,
     "actions": 40,
     "imported": 0,
     "errors": 0,
     "deferred": 407
   },
   "tag_fix": "",
-  "commit": "5f86a4997c4c06175ca7038841e32496100a59c9"
+  "commit": "835e8a39a85ed614cb8cf5219b8cd5cd3918012a"
 }
