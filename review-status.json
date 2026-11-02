@@ -1,12 +1,23 @@
 {
-  "observed_at": "2026-11-02T17:00:06.077711+00:00",
-  "run_id": "41486602387",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41486602387",
-  "result": "failure",
+  "observed_at": "2026-11-02T17:02:32.931433+00:00",
+  "run_id": "41487057432",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/41487057432",
+  "result": "success",
   "event": "push",
-  "mode": "",
-  "import_summary": {},
+  "mode": "apply",
+  "import_summary": {
+    "new": 0,
+    "known": 60,
+    "metadata_missing": 0,
+    "actions": 25,
+    "review_updates": 25,
+    "review_conflicts": 0,
+    "imported": 0,
+    "errors": 0,
+    "completed_actions": 25,
+    "reviews_completed": 25
+  },
   "tag_fix": "",
-  "commit": "3f287a09829bf89795515aaba0c3e1e951074922",
+  "commit": "a928952d0cfb6c8d7b44d0382123b9eb71f6f5a0",
   "searches": []
 }
