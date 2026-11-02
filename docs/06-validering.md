@@ -82,3 +82,12 @@ Live-anrop mot NCBI har inte körts. Miljöns tillåtna domäner innehåller int
 CI-filer har skapats men ingen GitHub Actions-körning har observerats.
 Zotero har inte kontaktats. End-to-end-import, klinisk relevans, drift och
 biblioteksidempotens återstår. Detta avslutar enbart etapp 0–1.
+
+## Sökversion 2/3 och rapportsammanfattning – 2026-11-02
+
+Användarlogg från körning 41438795739 verifierar 1524 träffar totalt, tio unika
+hämtade poster, tio nya, noll metadatafel/importer och 25 plansteg för version 2.
+Fortfarande irrelevanta provtitlar: ingen pilot godkänns på detta underlag.
+Version 3 är ett snävare förslag med sämre förväntad recall, ännu inte livevaliderat.
+Lokala tester: **95 passerar**, inklusive sammanfattning med escapad extern titel
+och den riktiga offline-runnerns generering av Actions Summary. Lint och format godkända.

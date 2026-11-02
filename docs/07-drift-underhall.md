@@ -21,6 +21,8 @@ Inget aktivt schema finns. Push kan aldrig välja apply; det kräver manuell tri
 Workflow har contents:read, inga tokens för push, timeout 30 minuter och
 concurrency utan cancel-in-progress. Secrets används inte av PR-tester.
 JSON och fel syns i körloggen; inga autentiseringsvärden skrivs ut.
+Vid lyckad körning finns även en kort sammanfattning med titlar, sökversioner
+och räknare under Summary på körningens översiktssida. Extern text HTML-escapas.
 En misslyckad körning ger icke-noll status. Bekräftade importer/slutförda steg
 rapporteras vid partiellt fel; ett förlorat serversvar kan innebära ytterligare
 sparad post. Kör alltid ny dry-run innan återförsök.

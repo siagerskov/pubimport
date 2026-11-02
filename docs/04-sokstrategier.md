@@ -1,6 +1,6 @@
 # Sökstrategier
 
-De fullständiga körbara strängarna finns i `config/searches.yaml`, version `2`.
+De fullständiga körbara strängarna finns i `config/searches.yaml`, version `3`.
 De är förslag, inte kliniskt validerade slutliga strategier.
 
 ## Verklig dry-run 2026-11-02, version 1
@@ -41,3 +41,22 @@ Proveniens från version 1 skrivs inte över när version 2 används.
 
 Syntetiska fixtures visar tekniskt överlapp, inte relevans. Dokumentera verkliga
 träffantal och granskade exempel när varje query-version utvärderas.
+
+## Verklig dry-run version 2 och nästa förslag
+
+Körning 41438795739, 2026-11-02: 954 MSK-träffar och 570 AI-träffar,
+fem hämtade per sökning, tio unika PMID, tio nya, noll importer/metadatafel.
+Provurvalet innehöll fortfarande irrelevanta titlar, bland annat NMR-spektra
+för geografiskt ursprung av Lycium barbarum och gliomacellsbiologi.
+Version 2 blev bredare än avsett när fler anatomibegrepp lades till.
+Den kliniska precisionen förbättrades inte tillräckligt.
+
+Version 3 är ett uttryckligen mer specifikt pilotförslag: radiologisk modalitet
+måste nämnas i titeln (radiologi, MRI/MR imaging, magnetic resonance imaging, CT,
+computed tomography, radiografi, ultraljud, fluoroskopi eller tomosyntes).
+Det generella uttrycket magnetic resonance och modalitets-MeSH används inte
+längre som alternativ. MSK-delen behåller anatomisk fritext/ämnesindexering,
+men AI-delen kräver explicita AI/ML/DL-begrepp i titeln. Detta kan missa relevanta
+arbeten där AI eller modalitet bara framgår av abstract/indexering. Det är ett
+medvetet precisionsförslag för pilot, inte en komplett litteratursökningsstrategi.
+Verklig relevans och träffantal för version 3 återstår att granska.

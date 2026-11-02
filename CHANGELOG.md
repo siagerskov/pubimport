@@ -2,6 +2,11 @@
 
 ## 2026-11-02
 
+- Version 2 gav fortfarande irrelevanta provträffar. Sökförslag version 3
+  kräver radiologisk modalitet i titel och prioriterar precision före recall.
+- Actions visar nu en kort, HTML-escapad sammanfattning med artikelrubriker,
+  sökversioner, antal och trunkering direkt på körningens översiktssida.
+
 - Verklig dry-run verifierad via användarens Actions-logg: nio unika poster,
   noll importer och inga metadatafel i det begränsade urvalet.
 - Sökförslag version 2 kräver tydligare radiologiska modaliteter efter

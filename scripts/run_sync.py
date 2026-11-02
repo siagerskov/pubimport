@@ -1,9 +1,14 @@
 """Shared manual/scheduled Actions runner; inputs are never evaluated by a shell."""
 
+import io
+import json
 import os
 import sys
+from contextlib import redirect_stdout
+from pathlib import Path
 
 from pubmed_zotero.cli import main
+from pubmed_zotero.reporting import action_summary
 
 
 def run():
@@ -32,7 +37,17 @@ def run():
     else:
         print("Okänt synkläge.", file=sys.stderr)
         return 2
-    return main(args)
+    output = io.StringIO()
+    with redirect_stdout(output):
+        status = main(args)
+    text = output.getvalue()
+    print(text, end="")
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path and status == 0:
+        report = json.loads(text)
+        with Path(summary_path).open("a", encoding="utf-8") as summary:
+            summary.write(action_summary(report))
+    return status
 
 
 if __name__ == "__main__":
