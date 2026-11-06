@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-11-06T14:20:29.069545+00:00",
-  "run_id": "42232936207",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42232936207",
+  "observed_at": "2026-11-06T15:52:44.854699+00:00",
+  "run_id": "42247025828",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42247025828",
   "result": "success",
   "event": "schedule",
   "mode": "apply",
