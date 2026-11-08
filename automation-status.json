@@ -1,31 +1,31 @@
 {
-  "observed_at": "2026-11-07T06:04:28.649416+00:00",
-  "run_id": "42345285972",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42345285972",
+  "observed_at": "2026-11-08T06:06:46.506635+00:00",
+  "run_id": "42453313603",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42453313603",
   "result": "success",
   "event": "schedule",
   "mode": "apply",
   "import_summary": {
     "searches": 3,
-    "total_hits": 4285,
+    "total_hits": 4286,
     "unique_pmids": 120,
-    "imported": 60,
+    "imported": 58,
     "errors": 0,
-    "unexamined_pmids": 3904,
-    "new": 60,
-    "known": 231,
+    "unexamined_pmids": 3848,
+    "new": 58,
+    "known": 288,
     "metadata_missing": 0,
     "review_updates": 0,
     "review_conflicts": 0,
-    "actions": 120,
-    "deferred": 60,
-    "completed_actions": 120,
+    "actions": 118,
+    "deferred": 62,
+    "completed_actions": 118,
     "reviews_completed": 0
   },
   "tag_fix": "",
   "commit": "a928952d0cfb6c8d7b44d0382123b9eb71f6f5a0",
   "daily_budget": {
-    "date": "2026-11-07",
+    "date": "2026-11-08",
     "timezone": "Europe/Stockholm",
     "cap_per_category": 20,
     "used": {
@@ -43,20 +43,20 @@
     {
       "search_id": "msk-radiology",
       "search_version": "4",
-      "total_hits": 350,
+      "total_hits": 335,
       "fetched": 40,
       "date_type": "edat",
-      "start": "2026/10/25",
-      "end": "2026/11/07"
+      "start": "2026/10/26",
+      "end": "2026/11/08"
     },
     {
       "search_id": "ai-radiology",
       "search_version": "3",
-      "total_hits": 3625,
+      "total_hits": 3641,
       "fetched": 40,
       "date_type": "pdat",
       "start": "2026/01/01",
-      "end": "2026/11/07"
+      "end": "2026/11/08"
     },
     {
       "search_id": "nph",
@@ -65,7 +65,7 @@
       "fetched": 40,
       "date_type": "pdat",
       "start": "2026/01/01",
-      "end": "2026/11/07"
+      "end": "2026/11/08"
     }
   ]
 }
