@@ -1,13 +1,13 @@
 {
-  "observed_at": "2026-11-11T06:02:38.825063+00:00",
-  "run_id": "42969559228",
-  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42969559228",
+  "observed_at": "2026-11-11T07:16:51.526440+00:00",
+  "run_id": "42978203644",
+  "run_url": "https://github.com/siagerskov/pubimport/actions/runs/42978203644",
   "result": "success",
   "event": "schedule",
   "mode": "apply",
   "import_summary": {
     "new": 0,
-    "known": 473,
+    "known": 531,
     "metadata_missing": 0,
     "actions": 0,
     "review_updates": 0,
